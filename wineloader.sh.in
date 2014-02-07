@@ -31,9 +31,9 @@ case $1 in ''|--help|--version) exec wine "$@" ;; esac
 
 # ENVIRONMENT VARIABLE
 set -a
-case ${LANG+:}       in '') LANG=ja_JP.UTF-8    ;; esac
-case ${WINEDEBUG+:}  in '') WINEDEBUG=fixme-all ;; esac
-case ${WINEPREFIX+:} in '') WINEPREFIX=~/.wine  ;; esac
+case $LANG          in '') LANG=ja_JP.UTF-8    ;; esac
+case $WINEPREFIX    in '') WINEPREFIX=~/.wine  ;; esac
+case ${WINEDEBUG+:} in '') WINEDEBUG=fixme-all ;; esac
 set +a
 
 # WINEPREFIX CREATION
