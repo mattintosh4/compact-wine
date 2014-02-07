@@ -1,0 +1,62 @@
+#!/bin/ksh
+#
+# WINELOADER  Copyright (C) 2014  mattintosh4, https://github.com/mattintosh4
+#
+
+run()
+{
+    case ${WINELOADERNOEXEC+:} in
+    :) echo $'\e[0;32m'$*$'\e[m' ;;
+    *) echo $'\e[1;32m'$*$'\e[m' ;;
+    esac >&2
+
+    exec wine "$@"
+}
+
+# RECURSIVE EXECUTION
+${WINELOADERNOEXEC+run "$@"}
+
+
+
+# GENERAL ----------------------------------------------------------------------
+
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
+
+PREF=$(cd "$(dirname "$0")"/.. && pwd)
+PATH=$PREF/libexec:$PATH
+
+# CONDITIONAL SKIPPING
+case $1 in ''|--help|--version) exec wine "$@" ;; esac
+
+# ENVIRONMENT VARIABLE
+set -a
+case ${LANG+:}       in '') LANG=ja_JP.UTF-8    ;; esac
+case ${WINEDEBUG+:}  in '') WINEDEBUG=fixme-all ;; esac
+case ${WINEPREFIX+:} in '') WINEPREFIX=~/.wine  ;; esac
+set +a
+
+# WINEPREFIX CREATION
+test -d "$WINEPREFIX" || \
+{
+    wine 'C:\windows\system32\wineboot.exe' --init
+
+    for f in $PREF/share/wine/inf/*.inf
+    {
+        # exclude unexpanded pattern
+        test -f "$f" || continue
+
+        # keep current process
+        (
+            run 'C:\windows\system32\rundll32.exe' \
+                setupapi,InstallHinfSection DefaultInstall 128 \
+                '\\?\'unix"$f"
+        )
+    }
+}
+
+
+
+# EXECUTION --------------------------------------------------------------------
+
+run "$@"
