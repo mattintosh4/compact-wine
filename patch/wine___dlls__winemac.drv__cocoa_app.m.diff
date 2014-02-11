@@ -1,0 +1,58 @@
+diff --git a/dlls/winemac.drv/cocoa_app.m b/dlls/winemac.drv/cocoa_app.m
+index d499fd1..57ab602 100644
+--- a/dlls/winemac.drv/cocoa_app.m
++++ b/dlls/winemac.drv/cocoa_app.m
+@@ -217,40 +217,40 @@ - (void) transformProcessToForeground
+             bundleName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleNameKey];
+ 
+             if ([bundleName length])
+-                title = [NSString stringWithFormat:@"Hide %@", bundleName];
++                title = [NSString stringWithFormat:@"%@ を隠す", bundleName];
+             else
+                 title = @"Hide";
+-            item = [submenu addItemWithTitle:title action:@selector(hide:) keyEquivalent:@""];
++                title = @"隠す";
++            item = [submenu addItemWithTitle:title action:@selector(hide:) keyEquivalent:@"h"];
+ 
+-            item = [submenu addItemWithTitle:@"Hide Others" action:@selector(hideOtherApplications:) keyEquivalent:@"h"];
++            item = [submenu addItemWithTitle:@"ほかを隠す" action:@selector(hideOtherApplications:) keyEquivalent:@"h"];
+             [item setKeyEquivalentModifierMask:NSCommandKeyMask | NSAlternateKeyMask];
+ 
+-            item = [submenu addItemWithTitle:@"Show All" action:@selector(unhideAllApplications:) keyEquivalent:@""];
++            item = [submenu addItemWithTitle:@"すべてを表示" action:@selector(unhideAllApplications:) keyEquivalent:@""];
+ 
+             [submenu addItem:[NSMenuItem separatorItem]];
+ 
+             if ([bundleName length])
+-                title = [NSString stringWithFormat:@"Quit %@", bundleName];
++                title = [NSString stringWithFormat:@"%@ を終了", bundleName];
+             else
+-                title = @"Quit";
++                title = @"終了";
+             item = [submenu addItemWithTitle:title action:@selector(terminate:) keyEquivalent:@"q"];
+-            [item setKeyEquivalentModifierMask:NSCommandKeyMask | NSAlternateKeyMask];
+             item = [[[NSMenuItem alloc] init] autorelease];
+             [item setTitle:@"Wine"];
+             [item setSubmenu:submenu];
+             [mainMenu addItem:item];
+ 
+             // Window menu
+-            submenu = [[[NSMenu alloc] initWithTitle:@"Window"] autorelease];
+-            [submenu addItemWithTitle:@"Minimize" action:@selector(performMiniaturize:) keyEquivalent:@""];
+-            [submenu addItemWithTitle:@"Zoom" action:@selector(performZoom:) keyEquivalent:@""];
++            submenu = [[[NSMenu alloc] initWithTitle:@"ウィンドウ"] autorelease];
++            [submenu addItemWithTitle:@"しまう" action:@selector(performMiniaturize:) keyEquivalent:@"m"];
++            [submenu addItemWithTitle:@"拡大／縮小" action:@selector(performZoom:) keyEquivalent:@""];
+             if ([NSWindow instancesRespondToSelector:@selector(toggleFullScreen:)])
+             {
+-                item = [submenu addItemWithTitle:@"Enter Full Screen" action:@selector(toggleFullScreen:) keyEquivalent:@"f"];
+-                [item setKeyEquivalentModifierMask:NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask];
++                item = [submenu addItemWithTitle:@"フルスクリーンにする" action:@selector(toggleFullScreen:) keyEquivalent:@"f"];
++                [item setKeyEquivalentModifierMask:NSCommandKeyMask | NSShiftKeyMask];
+             }
+             [submenu addItem:[NSMenuItem separatorItem]];
+-            [submenu addItemWithTitle:@"Bring All to Front" action:@selector(arrangeInFront:) keyEquivalent:@""];
++            [submenu addItemWithTitle:@"すべてを手前に移動" action:@selector(arrangeInFront:) keyEquivalent:@""];
+             item = [[[NSMenuItem alloc] init] autorelease];
+             [item setTitle:@"Window"];
+             [item setSubmenu:submenu];

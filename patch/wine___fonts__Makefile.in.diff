@@ -1,0 +1,17 @@
+diff --git a/fonts/Makefile.in b/fonts/Makefile.in
+index 8fd4749..29afeeb 100644
+--- a/fonts/Makefile.in
++++ b/fonts/Makefile.in
+@@ -65,11 +65,7 @@ BITMAP_FONTS  = \
+ 	vgas874.fon
+ 
+ TRUETYPE_FONTS = \
+-	marlett.ttf \
+-	symbol.ttf \
+-	tahoma.ttf \
+-	tahomabd.ttf \
+-	wingding.ttf
++	marlett.ttf
+ 
+ EXTRA_TARGETS = $(BITMAP_FONTS)
+ 
