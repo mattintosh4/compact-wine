@@ -1,33 +1,19 @@
-#!/usr/bin/env - SHELL=/bin/sh TERM=xterm-256color COMMAND_MODE=unix2003 LC_ALL=C LANG=C /bin/ksh
+#!/usr/bin/env - SHELL=/bin/sh TERM=xterm-256color COMMAND_MODE=unix2003 LANG=C LC_ALL=C /bin/ksh
 set -e
 set -o pipefail
 set -u
 set -x
 
-define(){ eval ${1}='"${*:2}"'; }
+CS_PATH=/usr/bin:/bin:/usr/sbin:/sbin
+PATH=$CS_PATH
+export PATH
 
-define CAT                  /bin/cat
-define CHMOD                /bin/chmod
-define CUT                  /usr/bin/cut
-define FIND                 /usr/bin/find
-define GETCONF              /usr/bin/getconf
-define GREP                 /usr/bin/grep
-define INSTALL_NAME_TOOL    /usr/bin/install_name_tool
-define LN                   /bin/ln
-define MKDIR                /bin/mkdir -p
-define OTOOL                /usr/bin/otool
-define PATCH                /usr/bin/patch
-define RM                   /bin/rm
-define RSYNC                /usr/bin/rsync -a
-define SED                  /usr/bin/sed
-define SW_VERS              /usr/bin/sw_vers
-define UNAME                /usr/bin/uname
-define XCODEBUILD           /usr/bin/xcodebuild
+define(){ eval ${1}='"${*:2}"'; }
 
 define PROJECTROOT      $(cd "$(dirname "$0")" && pwd)
 define SRCROOT          ${PROJECTROOT}/src
 
-define TMPDIR        /tmp/_build
+define TMPDIR           /tmp/_build
 
 define INSTALL_PREFIX   /usr/local/wine
 define W_PREFIX         ${INSTALL_PREFIX}
@@ -46,40 +32,47 @@ define XDIR             /opt/X11
 define XINCDIR          ${XDIR}/include
 define XLIBDIR          ${XDIR}/lib
 
-CS_PATH=$(${GETCONF} PATH)
-
 PATH=\
 ${BINDIR}:\
 ${MACPORTSDIR}/libexec/ccache:\
 ${MACPORTSDIR}/libexec/git-core:\
-${MACPORTSDIR}/libexec/gnubin:\
-${CS_PATH}
-export PATH
+$CS_PATH
 
 AC_PATH=\
 ${MACPORTSDIR}/libexec/gnubin:\
 ${MACPORTSDIR}/bin:\
 ${MACPORTSDIR}/sbin:\
-${CS_PATH}
+$CS_PATH
 
-DARWIN_VERSION=$(
-    ${UNAME} -r
-)
-MACOSX_DEPLOYMENT_TARGET=$(
-    ${SW_VERS} -productVersion \
-    | ${CUT} -d. -f-2
-)
+set -- `uname -r`
+DARWIN_VERSION=$1
+
+IFS=.
+set -- `sw_vers -productVersion`
+IFS=$' \t\n'
+MACOSX_DEPLOYMENT_TARGET=$1.$2
 export MACOSX_DEPLOYMENT_TARGET
-SDKROOT=$(
-    ${XCODEBUILD} -version -sdk macosx${MACOSX_DEPLOYMENT_TARGET} \
-    | ${SED} -n "/^Path: /s///p"
-)
+
+IFS=$'\n'
+set -- `xcodebuild -version -sdk macosx${MACOSX_DEPLOYMENT_TARGET}`
+IFS=$' \t\n'
+for r
+{
+    set -- $r
+    case $1 in
+    Path:)
+        SDKROOT=$2
+        break
+        ;;
+    esac
+}
+
 TRIPLE=i686-apple-darwin${DARWIN_VERSION}
 
 set -a
 define CC                   gcc-apple-4.2
 define CXX                  g++-apple-4.2
-define CFLAGS               -m32 -arch i386 -O3 -mtune=generic
+define CFLAGS               -m32 -arch i386 -O3 -march=core2 -mtune=core2
 define CPPFLAGS             -isysroot ${SDKROOT} -I${INCDIR}
 define CXXFLAGS             ${CFLAGS}
 define CXXCPPFLAGS          ${CPPFLAGS}
@@ -115,12 +108,12 @@ git_checkout()
 }
 make_install()
 {
-    ${MAKE} --jobs=3
-    ${MAKE} install
+    $MAKE --jobs=3
+    $MAKE install
 }
 clone_repos()
 {
-    ${RSYNC} --delete ${SRCROOT}/${1}/ ${TMPDIR}/${1}
+    rsync -a --delete ${SRCROOT}/${1}/ ${TMPDIR}/${1}
     cd ${TMPDIR}/${1}
 }
 
@@ -160,7 +153,7 @@ build_jpeg()
 
     clone_repos ${name}
     git_checkout
-    ${SED} -i "" "s|\$(datadir)/doc|&/libjpeg-turbo|" Makefile.am
+    sed -i '' '\|$(datadir)/doc|s||&/libjpeg-turbo|' Makefile.am
     autoreconf
     configure \
         --disable-dependency-tracking \
@@ -248,7 +241,8 @@ build_wine()
 
 patch_wine()
 {
-    for f in $PROJECTROOT/patch/wine___*.diff
+    set -- $PROJECTROOT/patch/wine___*.diff
+    for f
     {
         test -f "$f" || continue
         patch -Np1 < $f
@@ -259,17 +253,17 @@ patch_wine()
 
 #-------------------------------------------------------------------------------
 
-${RM} -rf   ${INSTALL_PREFIX}
-${RM} -rf   ${TMPDIR}
+rm -rf   ${INSTALL_PREFIX}
+rm -rf   ${TMPDIR}
 
-${MKDIR}    ${INSTALL_PREFIX}
-${MKDIR}    ${TMPDIR}
-${MKDIR}    ${W_BINDIR}
-${MKDIR}    ${W_INCDIR}
-${MKDIR}    ${W_LIBDIR}
-${MKDIR}    ${BINDIR}
-${MKDIR}    ${INCDIR}
-${MKDIR}    ${LIBDIR}
+mkdir -p ${INSTALL_PREFIX}
+mkdir -p ${TMPDIR}
+mkdir -p ${W_BINDIR}
+mkdir -p ${W_INCDIR}
+mkdir -p ${W_LIBDIR}
+mkdir -p ${BINDIR}
+mkdir -p ${INCDIR}
+mkdir -p ${LIBDIR}
 
 build_xz
 build_png
@@ -279,69 +273,60 @@ build_freetype
 build_lcms
 build_wine
 
-change_iname()
+
+change_id()
 {
     src=$1
-
-    case ${src} in
-    *.dylib)
-        set -- $(${OTOOL} -XD ${src})
-        case ${1} in
-        /*)
-            ${INSTALL_NAME_TOOL} -id @rpath/${src##*/} ${src}
-            ;;
-        esac
+    set -- $(otool -XD $src)
+    case $1 in
+    $LIBDIR/*)
+        (
+            set -x
+            install_name_tool -id @rpath/${1##*/} $src
+        )
         ;;
     esac
-
-    set -- $(${OTOOL} -XL ${1} | ${GREP} -o '.*\.dylib')
-    for f
+}
+change_link()
+{
+    src=$1
+    IFS=$'\n'
+    set -- $(otool -XL $src)
+    IFS=$' \t\n'
+    for r
     {
-        case ${f} in
-        ${LIBDIR}/*)
-            ${INSTALL_NAME_TOOL} -change ${f} @rpath/${f##*/} ${src}
+        set -- $r
+        case $1 in
+        $LIBDIR/*)
+            (
+                set -x
+                install_name_tool -change $1 @rpath/${1##*/} $src
+            )
             ;;
         esac
     }
 }
 
-set -- $(
-    ${FIND} ${W_LIBDIR} -type f \( -name "*.dylib" -o -name "*.so" \)
-)
-
-#for f
-#{
-#    change_iname ${f}
-#}
-
-LIBDIR=$LIBDIR \
-/usr/bin/ruby - "$@" <<\!
-ARGV.each {|f|
-    %x[/usr/bin/otool -XD #{f}].each_line {|line|
-        old = line.split[0]
-        next if old.start_with?("@")
-        new = File.join("@rpath", File.basename(old))
-        cmd = ['/usr/bin/install_name_tool', '-id', new, f]
-        if system(*cmd)
-            p cmd
-        else
-            exit(1)
-        end
-    }
-
-    %x[/usr/bin/otool -XL #{f}].each_line {|line|
-        old = line.split[0]
-        next unless old.start_with?(ENV["LIBDIR"])
-        new = File.join("@rpath", File.basename(old))
-        cmd = ['/usr/bin/install_name_tool', '-change', old, new, f]
-        if system(*cmd)
-            p cmd
-        else
-            exit(1)
-        end
-    }
+set +x
+IFS=$'\n'
+set -- `find -L $LIBDIR -type f \( -name "*.dylib" -o -name "*.so" \)`
+IFS=$' \t\n'
+for f
+{
+    case $f in
+    *.dylib)
+        change_id $f
+        ;;
+    esac
+    change_link $f
 }
-!
+set -x
 
-${RM} -rf ${LIBDIR}/*.la
-${RM} -rf ${LIBDIR}/pkgconfig
+rm -rf $LIBDIR/*.la
+rm -rf $LIBDIR/pkgconfig
+
+mkdir -p          $W_PREFIX/libexec
+mv $W_BINDIR/wine $W_PREFIX/libexec
+ln $PROJECTROOT/wineloader.sh.in $W_BINDIR/wine
+mkdir -p                                  $W_DATADIR/wine/inf
+ln $PROJECTROOT/osx-wine-inf/osx-wine.inf $W_DATADIR/wine/inf
