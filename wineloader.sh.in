@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 #
 # WINELOADER  Copyright (C) 2014  mattintosh4, https://github.com/mattintosh4
 #
@@ -9,22 +9,21 @@ run()
     :) echo $'\e[0;32m'$*$'\e[m' ;;
     *) echo $'\e[1;32m'$*$'\e[m' ;;
     esac >&2
-
     exec wine "$@"
 }
 
 # RECURSIVE EXECUTION
 ${WINELOADERNOEXEC+run "$@"}
 
-
-
 # GENERAL ----------------------------------------------------------------------
 
-PATH=/usr/bin:/bin:/usr/sbin:/sbin
-export PATH
+case $0 in
+*/*) PREF=`cd "${0%/*}"/.. && pwd` ;;
+*  ) PREF=`cd           .. && pwd` ;;
+esac
 
-PREF=$(cd "$(dirname "$0")"/.. && pwd)
-PATH=$PREF/libexec:$PATH
+PATH=$PREF/libexec:/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
 
 # CONDITIONAL SKIPPING
 case $1 in ''|--help|--version) exec wine "$@" ;; esac
@@ -37,7 +36,7 @@ case ${WINEDEBUG+:} in '') WINEDEBUG=fixme-all ;; esac
 set +a
 
 # WINEPREFIX CREATION
-test -d "$WINEPREFIX" || \
+test -e "$WINEPREFIX"/.update-timestamp || \
 {
     wine 'C:\windows\system32\wineboot.exe' --init
 
