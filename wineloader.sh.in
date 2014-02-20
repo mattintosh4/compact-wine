@@ -12,8 +12,7 @@ run()
     exec wine "$@"
 }
 
-# RECURSIVE EXECUTION
-${WINELOADERNOEXEC+run "$@"}
+
 
 # GENERAL ----------------------------------------------------------------------
 
@@ -23,7 +22,9 @@ case $0 in
 esac
 
 PATH=$PREF/libexec:/usr/bin:/bin:/usr/sbin:/sbin
-export PATH
+
+# RECURSIVE EXECUTION
+${WINELOADERNOEXEC+run "$@"}
 
 # CONDITIONAL SKIPPING
 case $1 in ''|--help|--version) exec wine "$@" ;; esac
