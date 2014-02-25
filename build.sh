@@ -47,15 +47,15 @@ $CS_PATH
 set -- `uname -r`
 DARWIN_VERSION=$1
 
-IFS=.
+SFI=$IFS IFS=.
 set -- `sw_vers -productVersion`
-IFS=$' \t\n'
+IFS=$SFI
 MACOSX_DEPLOYMENT_TARGET=$1.$2
 export MACOSX_DEPLOYMENT_TARGET
 
-IFS=$'\n'
-set -- `xcodebuild -version -sdk macosx${MACOSX_DEPLOYMENT_TARGET}`
-IFS=$' \t\n'
+SFI=$IFS IFS=$'\n'
+set -- `xcodebuild -version -sdk macosx$MACOSX_DEPLOYMENT_TARGET`
+IFS=$SFI
 for r
 {
     set -- $r
@@ -67,7 +67,7 @@ for r
     esac
 }
 
-TRIPLE=i686-apple-darwin${DARWIN_VERSION}
+TRIPLE=i686-apple-darwin$DARWIN_VERSION
 
 set -a
 define CC                   gcc-apple-4.2
