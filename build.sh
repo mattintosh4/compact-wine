@@ -218,6 +218,11 @@ build_wine()
         --prefix=${W_PREFIX}
         --build=${TRIPLE}
         --disable-win16
+        --with-cms
+        --with-freetype
+        --with-jpeg
+        --with-png
+        --with-tiff
         --without-capi
         --without-gphoto
         --without-gsm
