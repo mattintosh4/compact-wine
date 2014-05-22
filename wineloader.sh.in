@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ksh
 #
 # WINELOADER  Copyright (C) 2014  mattintosh4, https://github.com/mattintosh4
 #
@@ -6,8 +6,8 @@
 run()
 {
     case ${WINELOADERNOEXEC+:} in
-    :) echo $'\e[0;32m'$*$'\e[m' ;;
-    *) echo $'\e[1;32m'$*$'\e[m' ;;
+    :) printf '\e[1;30m%s\e[m\n' "$*" ;;
+    *) printf '\e[1;32m%s\e[m\n' "$*" ;;
     esac >&2
     exec wine "$@"
 }
@@ -31,21 +31,18 @@ case $1 in ''|--help|--version) exec wine "$@" ;; esac
 
 # ENVIRONMENT VARIABLE
 set -a
-case $LANG          in '') LANG=ja_JP.UTF-8    ;; esac
-case $WINEPREFIX    in '') WINEPREFIX=~/.wine  ;; esac
-case ${WINEDEBUG+:} in '') WINEDEBUG=fixme-all ;; esac
+case $LANG          in '') LANG=ja_JP.UTF-8       ;; esac
+case $WINEPREFIX    in '') WINEPREFIX=$HOME/.wine ;; esac
+case ${WINEDEBUG+:} in '') WINEDEBUG=fixme-all    ;; esac
 set +a
 
 # WINEPREFIX CREATION
-test -e "$WINEPREFIX"/.update-timestamp || \
+load_custom_inf()
 {
-    wine 'C:\windows\system32\wineboot.exe' --init
-
-    for f in $PREF/share/wine/inf/*.inf
+    set -- "$PREF"/share/wine/inf/*.inf
+    test -f "$1" || return 0
+    for f
     {
-        # exclude unexpanded pattern
-        test -f "$f" || continue
-
         # keep current process
         (
             run 'C:\windows\system32\rundll32.exe' \
@@ -54,6 +51,19 @@ test -e "$WINEPREFIX"/.update-timestamp || \
         )
     }
 }
+check_timestamp()
+{
+    if test -e "$WINEPREFIX"/.update-timestamp
+    then
+        set --  `stat -f %c -t %s "$PREF"/share/wine/wine.inf` `cat "$WINEPREFIX"/.update-timestamp`
+        test "$1" -gt "$2" || return 0
+        wine 'C:\windows\system32\wineboot.exe' --update
+    else
+        wine 'C:\windows\system32\wineboot.exe' --init
+    fi
+    load_custom_inf
+}
+check_timestamp
 
 
 

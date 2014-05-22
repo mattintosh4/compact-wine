@@ -1,0 +1,430 @@
+diff --git a/configure b/configure
+index fae5c0a..27f4e18 100755
+--- a/configure
++++ b/configure
+@@ -7882,7 +7882,7 @@ $wine_binary: main.o wine_info.plist
+ 	\$(CC) -o \$@ $LDEXECFLAGS main.o \$(LIBWINE) \$(LIBPORT) \$(EXTRALIBS) \$(LDFLAGS) \$(LDRPATH_LOCAL)
+ 
+ wine-installed: main.o wine_info.plist
+-	\$(CC) -o \$@ $LDEXECFLAGS main.o \$(LIBWINE) \$(LIBPORT) \$(EXTRALIBS) \$(LDFLAGS) \$(LDRPATH_INSTALL)
++	\$(CC) -o \$@ $LDEXECFLAGS main.o \$(LIBWINE) \$(LIBPORT) \$(EXTRALIBS) \$(LDFLAGS) \$(LDRPATH_INSTALL) -Wl,-rpath,/opt/X11/lib -Wl,-rpath,/usr/lib
+ "
+     ;;
+ 
+@@ -17344,12 +17344,12 @@ wine_fn_config_program ipconfig enable_ipconfig install,po
+ wine_fn_config_program lodctr enable_lodctr install
+ wine_fn_config_program mofcomp enable_mofcomp install
+ wine_fn_config_program mshta enable_mshta install
+-wine_fn_config_program msiexec enable_msiexec install,installbin,manpage
++wine_fn_config_program msiexec enable_msiexec install
+ wine_fn_config_program net enable_net install,po
+ wine_fn_config_program netsh enable_netsh install
+ wine_fn_config_program netstat enable_netstat install,po
+ wine_fn_config_program ngen enable_ngen install
+-wine_fn_config_program notepad enable_notepad install,installbin,manpage,po
++wine_fn_config_program notepad enable_notepad install,po
+ wine_fn_config_program oleview enable_oleview install,po
+ wine_fn_config_program ping enable_ping install
+ wine_fn_config_program plugplay enable_plugplay install
+@@ -17357,10 +17357,10 @@ wine_fn_config_program presentationfontcache enable_presentationfontcache instal
+ wine_fn_config_program progman enable_progman install,po
+ wine_fn_config_program reg enable_reg install,po
+ wine_fn_config_program regasm enable_regasm install
+-wine_fn_config_program regedit enable_regedit install,installbin,manpage,po
++wine_fn_config_program regedit enable_regedit install,po
+ wine_fn_config_test programs/regedit/tests regedit.exe_test
+ wine_fn_config_program regsvcs enable_regsvcs install
+-wine_fn_config_program regsvr32 enable_regsvr32 install,installbin,manpage,po
++wine_fn_config_program regsvr32 enable_regsvr32 install,po
+ wine_fn_config_program rpcss enable_rpcss clean,install
+ wine_fn_config_program rundll.exe16 enable_win16 install
+ wine_fn_config_program rundll32 enable_rundll32 install
+@@ -17381,17 +17381,17 @@ wine_fn_config_program uninstaller enable_uninstaller install,po
+ wine_fn_config_program unlodctr enable_unlodctr install
+ wine_fn_config_program view enable_view install,po
+ wine_fn_config_program wevtutil enable_wevtutil install
+-wine_fn_config_program wineboot enable_wineboot install,installbin,manpage,po
++wine_fn_config_program wineboot enable_wineboot install,po
+ wine_fn_config_program winebrowser enable_winebrowser install
+-wine_fn_config_program winecfg enable_winecfg install,installbin,manpage,po
+-wine_fn_config_program wineconsole enable_wineconsole install,installbin,manpage,po
+-wine_fn_config_program winedbg enable_winedbg install,installbin,manpage,po
++wine_fn_config_program winecfg enable_winecfg install,po
++wine_fn_config_program wineconsole enable_wineconsole install,po
++wine_fn_config_program winedbg enable_winedbg install,po
+ wine_fn_config_program winedevice enable_winedevice install
+-wine_fn_config_program winefile enable_winefile install,installbin,manpage,po
++wine_fn_config_program winefile enable_winefile install,po
+ wine_fn_config_program winemenubuilder enable_winemenubuilder install
+-wine_fn_config_program winemine enable_winemine install,installbin,manpage,po
++wine_fn_config_program winemine enable_winemine install,po
+ wine_fn_config_program winemsibuilder enable_winemsibuilder install
+-wine_fn_config_program winepath enable_winepath install,installbin,manpage
++wine_fn_config_program winepath enable_winepath install
+ wine_fn_config_program winetest enable_winetest clean
+ wine_fn_config_program winevdm enable_win16 install
+ wine_fn_config_program winhelp.exe16 enable_win16 install
+diff --git a/dlls/shell32/folder.ico b/dlls/shell32/folder.ico
+index 0b24e0e..082ff47 100644
+Binary files a/dlls/shell32/folder.ico and b/dlls/shell32/folder.ico differ
+diff --git a/dlls/shell32/folder_open.ico b/dlls/shell32/folder_open.ico
+index e4c5efd..0cbb4c3 100644
+Binary files a/dlls/shell32/folder_open.ico and b/dlls/shell32/folder_open.ico differ
+diff --git a/dlls/shell32/mydocs.ico b/dlls/shell32/mydocs.ico
+index a1ecd54..082ff47 100644
+Binary files a/dlls/shell32/mydocs.ico and b/dlls/shell32/mydocs.ico differ
+diff --git a/dlls/shell32/shell32.rc b/dlls/shell32/shell32.rc
+index 37acbe7..dae8caf 100644
+--- a/dlls/shell32/shell32.rc
++++ b/dlls/shell32/shell32.rc
+@@ -204,8 +204,8 @@ the folder?"
+ 	IDS_FAVORITES               "Favorites"
+ 	IDS_STARTUP                 "StartUp"
+ 	IDS_STARTMENU               "Start Menu"
+-	IDS_MYMUSIC                 "My Music"
+-	IDS_MYVIDEOS                "My Videos"
++	IDS_MYMUSIC                 "Music"
++	IDS_MYVIDEOS                "Movies"
+ 	IDS_DESKTOPDIRECTORY        "#msgctxt#directory#Desktop"
+ 	IDS_NETHOOD                 "NetHood"
+ 	IDS_TEMPLATES               "Templates"
+@@ -213,13 +213,13 @@ the folder?"
+ 	IDS_HISTORY                 "History"
+ 	IDS_PROGRAM_FILES           "Program Files"
+ 	IDS_PROGRAM_FILESX86        "Program Files (x86)"
+-	IDS_MYPICTURES              "My Pictures"
++	IDS_MYPICTURES              "Pictures"
+ 	IDS_COMMON_FILES            "Common Files"
+ 	IDS_COMMON_DOCUMENTS        "Documents"
+ 	IDS_ADMINTOOLS              "Administrative Tools"
+ 	IDS_COMMON_MUSIC            "Music"
+ 	IDS_COMMON_PICTURES         "Pictures"
+-	IDS_COMMON_VIDEOS           "Videos"
++	IDS_COMMON_VIDEOS           "Movies"
+ 	IDS_CONTACTS                "Contacts"
+ 	IDS_LINKS                   "Links"
+ 	IDS_SLIDE_SHOWS             "Slide Shows"
+diff --git a/dlls/shell32/shfldr_desktop.c b/dlls/shell32/shfldr_desktop.c
+index 2910106..9c19139 100644
+--- a/dlls/shell32/shfldr_desktop.c
++++ b/dlls/shell32/shfldr_desktop.c
+@@ -86,7 +86,7 @@ static inline IDesktopFolderImpl *impl_from_IPersistFolder2( IPersistFolder2 *if
+ }
+ 
+ static const shvheader desktop_header[] = {
+-    {IDS_SHV_COLUMN1, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 15},
++    {IDS_SHV_COLUMN1, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 30},
+     {IDS_SHV_COLUMN2, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 10},
+     {IDS_SHV_COLUMN3, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 10},
+     {IDS_SHV_COLUMN4, SHCOLSTATE_TYPE_DATE | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 12},
+diff --git a/dlls/shell32/shfldr_fs.c b/dlls/shell32/shfldr_fs.c
+index 357e4ff..85ad8dc 100644
+--- a/dlls/shell32/shfldr_fs.c
++++ b/dlls/shell32/shfldr_fs.c
+@@ -184,7 +184,7 @@ static const IUnknownVtbl unkvt =
+ };
+ 
+ static const shvheader GenericSFHeader[] = {
+-    {IDS_SHV_COLUMN1, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 15},
++    {IDS_SHV_COLUMN1, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 30},
+     {IDS_SHV_COLUMN2, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 10},
+     {IDS_SHV_COLUMN3, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 10},
+     {IDS_SHV_COLUMN4, SHCOLSTATE_TYPE_DATE | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 12},
+diff --git a/dlls/shell32/shfldr_mycomp.c b/dlls/shell32/shfldr_mycomp.c
+index ac7fd48..76da145 100644
+--- a/dlls/shell32/shfldr_mycomp.c
++++ b/dlls/shell32/shfldr_mycomp.c
+@@ -81,7 +81,7 @@ static inline IMyComputerFolderImpl *impl_from_IPersistFolder2(IPersistFolder2 *
+ */
+ 
+ static const shvheader mycomputer_header[] = {
+-    {IDS_SHV_COLUMN1, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 15},
++    {IDS_SHV_COLUMN1, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 30},
+     {IDS_SHV_COLUMN3, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 10},
+     {IDS_SHV_COLUMN6, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 10},
+     {IDS_SHV_COLUMN7, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 10},
+diff --git a/dlls/shell32/shfldr_netplaces.c b/dlls/shell32/shfldr_netplaces.c
+index 36d18bc..5f294ad 100644
+--- a/dlls/shell32/shfldr_netplaces.c
++++ b/dlls/shell32/shfldr_netplaces.c
+@@ -76,7 +76,7 @@ static inline IGenericSFImpl *impl_from_IPersistFolder2(IPersistFolder2 *iface)
+ 
+ 
+ static const shvheader networkplaces_header[] = {
+-    {IDS_SHV_COLUMN1, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 15},
++    {IDS_SHV_COLUMN1, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 30},
+     {IDS_SHV_COLUMN9, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 10}
+ };
+ 
+diff --git a/dlls/shell32/shfldr_unixfs.c b/dlls/shell32/shfldr_unixfs.c
+index 8f93e7f..3ed80e9 100644
+--- a/dlls/shell32/shfldr_unixfs.c
++++ b/dlls/shell32/shfldr_unixfs.c
+@@ -1479,7 +1479,7 @@ static HRESULT WINAPI ShellFolder2_GetDetailsOf(IShellFolder2* iface,
+     struct stat statItem;
+ 
+     static const shvheader unixfs_header[SHELLVIEWCOLUMNS] = {
+-        {IDS_SHV_COLUMN1,  SHCOLSTATE_TYPE_STR  | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 15},
++        {IDS_SHV_COLUMN1,  SHCOLSTATE_TYPE_STR  | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 30},
+         {IDS_SHV_COLUMN2,  SHCOLSTATE_TYPE_STR  | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 10},
+         {IDS_SHV_COLUMN3,  SHCOLSTATE_TYPE_STR  | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 10},
+         {IDS_SHV_COLUMN4,  SHCOLSTATE_TYPE_DATE | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 12},
+diff --git a/dlls/wined3d/wined3d_private.h b/dlls/wined3d/wined3d_private.h
+index 9e209d9..5611b05 100644
+--- a/dlls/wined3d/wined3d_private.h
++++ b/dlls/wined3d/wined3d_private.h
+@@ -1438,7 +1438,7 @@ enum wined3d_pci_device
+     CARD_NVIDIA_GEFORCE_GTX275      = 0x05e6,
+     CARD_NVIDIA_GEFORCE_GTX280      = 0x05e1,
+     CARD_NVIDIA_GEFORCE_315M        = 0x0a7a,
+-    CARD_NVIDIA_GEFORCE_320M        = 0x08a3,
++    CARD_NVIDIA_GEFORCE_320M        = 0x08a2, /* MacbookAir3,1 / NVIDIA GeForce 320M */
+     CARD_NVIDIA_GEFORCE_GT320M      = 0x0a2d,
+     CARD_NVIDIA_GEFORCE_GT325M      = 0x0a35,
+     CARD_NVIDIA_GEFORCE_GT330       = 0x0ca0,
+diff --git a/dlls/winemac.drv/cocoa_app.m b/dlls/winemac.drv/cocoa_app.m
+index dff6977..c9a7a06 100644
+--- a/dlls/winemac.drv/cocoa_app.m
++++ b/dlls/winemac.drv/cocoa_app.m
+@@ -217,40 +217,40 @@ - (void) transformProcessToForeground
+             bundleName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleNameKey];
+ 
+             if ([bundleName length])
+-                title = [NSString stringWithFormat:@"Hide %@", bundleName];
++                title = [NSString stringWithFormat:@"%@ を隠す", bundleName];
+             else
+                 title = @"Hide";
+-            item = [submenu addItemWithTitle:title action:@selector(hide:) keyEquivalent:@""];
++                title = @"隠す";
++            item = [submenu addItemWithTitle:title action:@selector(hide:) keyEquivalent:@"h"];
+ 
+-            item = [submenu addItemWithTitle:@"Hide Others" action:@selector(hideOtherApplications:) keyEquivalent:@"h"];
++            item = [submenu addItemWithTitle:@"ほかを隠す" action:@selector(hideOtherApplications:) keyEquivalent:@"h"];
+             [item setKeyEquivalentModifierMask:NSCommandKeyMask | NSAlternateKeyMask];
+ 
+-            item = [submenu addItemWithTitle:@"Show All" action:@selector(unhideAllApplications:) keyEquivalent:@""];
++            item = [submenu addItemWithTitle:@"すべてを表示" action:@selector(unhideAllApplications:) keyEquivalent:@""];
+ 
+             [submenu addItem:[NSMenuItem separatorItem]];
+ 
+             if ([bundleName length])
+-                title = [NSString stringWithFormat:@"Quit %@", bundleName];
++                title = [NSString stringWithFormat:@"%@ を終了", bundleName];
+             else
+-                title = @"Quit";
++                title = @"終了";
+             item = [submenu addItemWithTitle:title action:@selector(terminate:) keyEquivalent:@"q"];
+-            [item setKeyEquivalentModifierMask:NSCommandKeyMask | NSAlternateKeyMask];
+             item = [[[NSMenuItem alloc] init] autorelease];
+             [item setTitle:@"Wine"];
+             [item setSubmenu:submenu];
+             [mainMenu addItem:item];
+ 
+             // Window menu
+-            submenu = [[[NSMenu alloc] initWithTitle:@"Window"] autorelease];
+-            [submenu addItemWithTitle:@"Minimize" action:@selector(performMiniaturize:) keyEquivalent:@""];
+-            [submenu addItemWithTitle:@"Zoom" action:@selector(performZoom:) keyEquivalent:@""];
++            submenu = [[[NSMenu alloc] initWithTitle:@"ウィンドウ"] autorelease];
++            [submenu addItemWithTitle:@"しまう" action:@selector(performMiniaturize:) keyEquivalent:@"m"];
++            [submenu addItemWithTitle:@"拡大／縮小" action:@selector(performZoom:) keyEquivalent:@""];
+             if ([NSWindow instancesRespondToSelector:@selector(toggleFullScreen:)])
+             {
+-                item = [submenu addItemWithTitle:@"Enter Full Screen" action:@selector(toggleFullScreen:) keyEquivalent:@"f"];
+-                [item setKeyEquivalentModifierMask:NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask];
++                item = [submenu addItemWithTitle:@"フルスクリーンにする" action:@selector(toggleFullScreen:) keyEquivalent:@"f"];
++                [item setKeyEquivalentModifierMask:NSCommandKeyMask | NSShiftKeyMask];
+             }
+             [submenu addItem:[NSMenuItem separatorItem]];
+-            [submenu addItemWithTitle:@"Bring All to Front" action:@selector(arrangeInFront:) keyEquivalent:@""];
++            [submenu addItemWithTitle:@"すべてを手前に移動" action:@selector(arrangeInFront:) keyEquivalent:@""];
+             item = [[[NSMenuItem alloc] init] autorelease];
+             [item setTitle:@"Window"];
+             [item setSubmenu:submenu];
+diff --git a/dlls/winemac.drv/cocoa_window.m b/dlls/winemac.drv/cocoa_window.m
+index 7ead126..2a199f9 100644
+--- a/dlls/winemac.drv/cocoa_window.m
++++ b/dlls/winemac.drv/cocoa_window.m
+@@ -1132,6 +1132,9 @@ - (void) orderBelow:(WineWindow*)prev orAbove:(WineWindow*)next activate:(BOOL)a
+             [NSApp unhide:nil];
+             wasVisible = [self isVisible];
+ 
++            [NSApp setPresentationOptions:NSApplicationPresentationAutoHideDock|
++                                          NSApplicationPresentationAutoHideMenuBar];
++
+             if (activate)
+                 [NSApp activateIgnoringOtherApps:YES];
+ 
+diff --git a/dlls/winemac.drv/keyboard.c b/dlls/winemac.drv/keyboard.c
+index a46d324..66cc4f2 100644
+--- a/dlls/winemac.drv/keyboard.c
++++ b/dlls/winemac.drv/keyboard.c
+@@ -238,14 +238,14 @@ static const struct {
+     { VK_BACK,                  0x0E,           TRUE },     /* kVK_Delete */
+     { 0,                        0,              FALSE },    /* 0x34 unused */
+     { VK_ESCAPE,                0x01,           TRUE },     /* kVK_Escape */
+-    { VK_RMENU,                 0x38 | 0x100,   TRUE },     /* kVK_RightCommand */
+-    { VK_LMENU,                 0x38,           TRUE },     /* kVK_Command */
++    { 0,                        0,              FALSE },    /* kVK_RightCommand */
++    { 0,                        0,              FALSE },    /* kVK_Command */
+     { VK_LSHIFT,                0x2A,           TRUE },     /* kVK_Shift */
+     { VK_CAPITAL,               0x3A,           TRUE },     /* kVK_CapsLock */
+-    { 0,                        0,              FALSE },    /* kVK_Option */
++    { VK_LMENU,                 0x38,           TRUE },     /* kVK_Option */
+     { VK_LCONTROL,              0x1D,           TRUE },     /* kVK_Control */
+     { VK_RSHIFT,                0x36,           TRUE },     /* kVK_RightShift */
+-    { 0,                        0,              FALSE },    /* kVK_RightOption */
++    { VK_RMENU,                 0x38 | 0x100,   TRUE },     /* kVK_RightOption */
+     { VK_RCONTROL,              0x1D | 0x100,   TRUE },     /* kVK_RightControl */
+     { 0,                        0,              FALSE },    /* kVK_Function */
+     { VK_F17,                   0x68,           TRUE },     /* kVK_F17 */
+diff --git a/fonts/Makefile.in b/fonts/Makefile.in
+index 9d4ea9f..303c3e1 100644
+--- a/fonts/Makefile.in
++++ b/fonts/Makefile.in
+@@ -1,16 +1,10 @@
+ FONT_SRCS = \
+-	courier.sfd \
+ 	fixedsys.sfd \
+ 	fixedsys_jp.sfd \
+ 	marlett.sfd \
+-	ms_sans_serif.sfd \
+ 	small_fonts.sfd \
+ 	small_fonts_jp.sfd \
+-	symbol.sfd \
+-	system.sfd \
+-	tahoma.sfd \
+-	tahomabd.sfd \
+-	wingding.sfd
++	system.sfd
+ 
+ # Make sure that make_makefiles sees the generated rules
+ install install-lib::
+diff --git a/include/wine/wine_common_ver.rc b/include/wine/wine_common_ver.rc
+index d8aeaf8..e3a6927 100644
+--- a/include/wine/wine_common_ver.rc
++++ b/include/wine/wine_common_ver.rc
+@@ -100,7 +100,7 @@ FILESUBTYPE    WINE_FILESUBTYPE
+ {
+     BLOCK "StringFileInfo"
+     {
+-	BLOCK "040904E4" /* LANG_ENGLISH/SUBLANG_DEFAULT, CP 1252 */
++	BLOCK "041103A4" /* LANG_JAPANESE/SUBLANG_DEFAULT, CP 932 */
+ 	{
+ 	    VALUE "CompanyName", "Microsoft Corporation"  /* GameGuard depends on this */
+ 	    VALUE "FileDescription", WINE_FILEDESCRIPTION_STR
+@@ -115,6 +115,6 @@ FILESUBTYPE    WINE_FILESUBTYPE
+     }
+     BLOCK "VarFileInfo"
+     {
+-	VALUE "Translation", 0x0409, 0x04E4 /* LANG_ENGLISH/SUBLANG_DEFAULT, CP 1252 */
++	VALUE "Translation", 0x0411, 0x03A4 /* LANG_JAPANESE/SUBLANG_DEFAULT, CP 932 */
+     }
+ }
+diff --git a/loader/Makefile.in b/loader/Makefile.in
+index 95e4798..69ecf06 100644
+--- a/loader/Makefile.in
++++ b/loader/Makefile.in
+@@ -5,10 +5,7 @@ C_SRCS = \
+ 	preloader.c
+ 
+ MANPAGES = \
+-	wine.de.UTF-8.man.in \
+-	wine.fr.UTF-8.man.in \
+-	wine.man.in \
+-	wine.pl.UTF-8.man.in
++	wine.man.in
+ 
+ IN_SRCS = \
+ 	wine.inf.in \
+diff --git a/loader/main.c b/loader/main.c
+index ac67290..866e99a 100644
+--- a/loader/main.c
++++ b/loader/main.c
+@@ -87,6 +87,11 @@ static inline void reserve_area( void *addr, size_t size )
+ static void check_command_line( int argc, char *argv[] )
+ {
+     static const char usage[] =
++        "Wine version 1.7.16  Nihonshu binary edition (2014-05-19)\n"
++        "  Build: Darwin Kernel Version 10.8.0: Tue Jun  7 16:33:36 PDT 2011; root:xnu-1504.15.3~1/RELEASE_I386\n"
++        "  Target: i686-apple-darwin10.8.0\n"
++        "  Configured with: --prefix=/usr/local/wine --build=i686-apple-darwin10.8.0 --disable-win16 --with-cms --with-coreaudio --with-cups --with-curses --with-freetype --with-jpeg --with-openal --with-opencl --with-opengl --with-png --with-pthread --with-tiff --with-xml --with-xslt --with-zlib --with-x --x-inc=/opt/X11/include --x-lib=/opt/X11/lib --without-capi --without-gphoto --without-gsm --without-oss --without-sane --without-v4l\n"
++        "\n"
+         "Usage: wine PROGRAM [ARGUMENTS...]   Run the specified program\n"
+         "       wine --help                   Display this help and exit\n"
+         "       wine --version                Output version information and exit";
+diff --git a/po/ja.po b/po/ja.po
+index 5db084e..1d06138 100644
+--- a/po/ja.po
++++ b/po/ja.po
+@@ -7917,7 +7917,7 @@ msgstr "プログラム"
+ 
+ #: shell32.rc:204
+ msgid "My Documents"
+-msgstr "My Documents"
++msgstr "マイ ドキュメント"
+ 
+ #: shell32.rc:205
+ msgid "Favorites"
+diff --git a/programs/explorer/explorer.c b/programs/explorer/explorer.c
+index 1b900d0..a6efc3c 100644
+--- a/programs/explorer/explorer.c
++++ b/programs/explorer/explorer.c
+@@ -44,8 +44,8 @@ WINE_DEFAULT_DEBUG_CHANNEL(explorer);
+ #define NAV_TOOLBAR_HEIGHT 30
+ #define PATHBOX_HEIGHT 24
+ 
+-#define DEFAULT_WIDTH 640
+-#define DEFAULT_HEIGHT 480
++#define DEFAULT_WIDTH 800
++#define DEFAULT_HEIGHT 600
+ 
+ 
+ static const WCHAR EXPLORER_CLASS[] = {'W','I','N','E','_','E','X','P','L','O','R','E','R','\0'};
+diff --git a/programs/iexplore/main.c b/programs/iexplore/main.c
+index 73fec25..b622f3e 100644
+--- a/programs/iexplore/main.c
++++ b/programs/iexplore/main.c
+@@ -40,7 +40,7 @@ static BOOL check_native_ie(void)
+     static const WCHAR wineW[] = {'W','i','n','e',0};
+     static const WCHAR file_desc_strW[] =
+         {'\\','S','t','r','i','n','g','F','i','l','e','I','n','f','o',
+-         '\\','0','4','0','9','0','4','e','4',
++         '\\','0','4','1','1','0','3','a','4',
+          '\\','F','i','l','e','D','e','s','c','r','i','p','t','i','o','n',0};
+ 
+     size = GetFileVersionInfoSizeW(browseui_dllW, &handle);
+diff --git a/server/Makefile.in b/server/Makefile.in
+index 19a4fac..44fc915 100644
+--- a/server/Makefile.in
++++ b/server/Makefile.in
+@@ -48,8 +48,6 @@ C_SRCS = \
+ PROGRAMS = wineserver wineserver-installed
+ 
+ MANPAGES = \
+-	wineserver.de.UTF-8.man.in \
+-	wineserver.fr.UTF-8.man.in \
+ 	wineserver.man.in
+ 
+ OBJS = $(C_SRCS:.c=.o)
+diff --git a/tools/Makefile.in b/tools/Makefile.in
+index 0f652f0..264c034 100644
+--- a/tools/Makefile.in
++++ b/tools/Makefile.in
+@@ -2,8 +2,6 @@ PROGRAMS = \
+ 	make_xftmpl$(EXEEXT)
+ 
+ MANPAGES = \
+-	winemaker.de.UTF-8.man.in \
+-	winemaker.fr.UTF-8.man.in \
+ 	winemaker.man.in
+ 
+ C_SRCS = \
+@@ -23,8 +21,6 @@ make_xftmpl$(EXEEXT): make_xftmpl.o
+ .PHONY: install install-lib install-dev uninstall
+ 
+ install install-lib::
+-	$(INSTALL_DATA) $(srcdir)/wine.desktop $(DESTDIR)$(datadir)/applications/wine.desktop
+-	-$(UPDATE_DESKTOP_DATABASE)
+ 
+ install install-dev:: install-man-pages
+ 	$(INSTALL_SCRIPT) $(srcdir)/winemaker $(DESTDIR)$(bindir)/winemaker

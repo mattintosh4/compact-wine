@@ -81,12 +81,23 @@ define LDFLAGS              -Wl,-headerpad_max_install_names -Wl,-syslibroot,${S
 define CCACHE_PATH          ${MACPORTSDIR}/bin
 
 define FONTFORGE            ${MACPORTSDIR}/bin/fontforge
+define INSTALL_NAME_TOOL    ${MACPORTSDIR}/bin/install_name_tool
 define MAKE                 ${MACPORTSDIR}/bin/gmake
 define MSGFMT               ${MACPORTSDIR}/bin/msgfmt
 define NASM                 ${MACPORTSDIR}/bin/nasm
 define PKG_CONFIG           ${MACPORTSDIR}/bin/pkg-config
 define PKG_CONFIG_LIBDIR    ${LIBDIR}/pkgconfig:/usr/lib/pkgconfig
 set +a
+
+for f in \
+INSTALL_NAME_TOOL \
+MAKE \
+MSGFMT \
+NASM \
+PKG_CONFIG
+{
+    eval test -x '$'$f
+}
 
 #-------------------------------------------------------------------------------
 
@@ -219,19 +230,27 @@ build_wine()
         --build=${TRIPLE}
         --disable-win16
         --with-cms
+        --with-coreaudio
+        --with-cups
+        --with-curses
         --with-freetype
         --with-jpeg
+        --with-openal --with-opencl --with-opengl
         --with-png
+        --with-pthread
         --with-tiff
+        --with-xml
+        --with-xslt
+        --with-zlib
+        --with-x
+        --x-inc=${XINCDIR}
+        --x-lib=${XLIBDIR}
         --without-capi
         --without-gphoto
         --without-gsm
         --without-oss
         --without-sane
         --without-v4l
-        --with-x
-        --x-inc=${XINCDIR}
-        --x-lib=${XLIBDIR}
     )
 
     clone_repos ${name}
@@ -287,7 +306,7 @@ change_id()
     $LIBDIR/*)
         (
             set -x
-            install_name_tool -id @rpath/${1##*/} $src
+            $INSTALL_NAME_TOOL -id @rpath/${1##*/} $src
         )
         ;;
     esac
@@ -305,7 +324,7 @@ change_link()
         $LIBDIR/*)
             (
                 set -x
-                install_name_tool -change $1 @rpath/${1##*/} $src
+                $INSTALL_NAME_TOOL -change $1 @rpath/${1##*/} $src
             )
             ;;
         esac
@@ -335,3 +354,5 @@ mv $W_BINDIR/wine $W_PREFIX/libexec
 ln $PROJECTROOT/wineloader.sh.in $W_BINDIR/wine
 mkdir -p                                  $W_DATADIR/wine/inf
 ln $PROJECTROOT/osx-wine-inf/osx-wine.inf $W_DATADIR/wine/inf
+
+$PROJECTROOT/patch_autogen.sh $PROJECTROOT

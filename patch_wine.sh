@@ -1,7 +1,8 @@
 sed "s|@WINE_VERSION@|$(cat VERSION)|
      s|@UNAME@|$(uname -v)|
      s|@TRIPLE@|$TRIPLE|
-     s|@CONFIGURE_ARGS@|${configure_args[*]}|" <<\! | patch -Np1
+     s|@CONFIGURE_ARGS@|${configure_args[*]}|
+     s|@DATE@|`date +%F`|" <<\! | patch -Np1
 diff --git a/loader/main.c b/loader/main.c
 index ac67290..7cdafeb 100644
 --- a/loader/main.c
@@ -10,7 +11,7 @@ index ac67290..7cdafeb 100644
  static void check_command_line( int argc, char *argv[] )
  {
      static const char usage[] =
-+        "@WINE_VERSION@  Nihonshu binary edition\n"
++        "@WINE_VERSION@  Nihonshu binary edition (@DATE@)\n"
 +        "  Build: @UNAME@\n"
 +        "  Target: @TRIPLE@\n"
 +        "  Configured with: @CONFIGURE_ARGS@\n"
