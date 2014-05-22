@@ -1,3 +1,6 @@
 [submodule "osx-wine-patch"]
 	path = osx-wine-patch
 	url = https://mattintosh4@github.com/mattintosh4/osx-wine-patch.git
+[submodule "osx-wine-inf"]
+	path = osx-wine-inf
+	url = /usr/local/src/compact-wine/osx-wine-inf
