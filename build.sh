@@ -163,7 +163,7 @@ build_jpeg()
     name=libjpeg-turbo
 
     clone_repos ${name}
-    git_checkout
+    git_checkout 1.3.x
     sed -i '' '\|$(datadir)/doc|s||&/libjpeg-turbo|' Makefile.am
     autoreconf
     configure \
