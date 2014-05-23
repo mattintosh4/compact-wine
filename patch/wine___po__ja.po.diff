@@ -1,8 +1,8 @@
 diff --git a/po/ja.po b/po/ja.po
-index 40f06e8..7630133 100644
+index 2a2cf56..cbc35c4 100644
 --- a/po/ja.po
 +++ b/po/ja.po
-@@ -7911,7 +7911,7 @@ msgstr "プログラム"
+@@ -8119,7 +8119,7 @@ msgstr "プログラム"
  
  #: shell32.rc:204
  msgid "My Documents"

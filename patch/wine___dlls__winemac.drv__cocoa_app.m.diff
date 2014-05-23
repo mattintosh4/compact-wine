@@ -1,8 +1,8 @@
 diff --git a/dlls/winemac.drv/cocoa_app.m b/dlls/winemac.drv/cocoa_app.m
-index d499fd1..57ab602 100644
+index d454513..3faa851 100644
 --- a/dlls/winemac.drv/cocoa_app.m
 +++ b/dlls/winemac.drv/cocoa_app.m
-@@ -217,40 +217,40 @@ - (void) transformProcessToForeground
+@@ -219,40 +219,40 @@ - (void) transformProcessToForeground
              bundleName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleNameKey];
  
              if ([bundleName length])

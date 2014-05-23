@@ -1,9 +1,9 @@
 diff --git a/tools/Makefile.in b/tools/Makefile.in
-index 3ee8473..19d2f6c 100644
+index 0f652f0..264c034 100644
 --- a/tools/Makefile.in
 +++ b/tools/Makefile.in
-@@ -8,8 +8,6 @@ PROGRAMS = \
- 	sfnt2fnt$(EXEEXT)
+@@ -2,8 +2,6 @@ PROGRAMS = \
+ 	make_xftmpl$(EXEEXT)
  
  MANPAGES = \
 -	winemaker.de.UTF-8.man.in \
@@ -11,7 +11,7 @@ index 3ee8473..19d2f6c 100644
  	winemaker.man.in
  
  C_SRCS = \
-@@ -41,8 +39,6 @@ sfnt2fnt$(EXEEXT): sfnt2fnt.o
+@@ -23,8 +21,6 @@ make_xftmpl$(EXEEXT): make_xftmpl.o
  .PHONY: install install-lib install-dev uninstall
  
  install install-lib::

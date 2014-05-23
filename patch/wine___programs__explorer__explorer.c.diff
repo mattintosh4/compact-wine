@@ -1,5 +1,5 @@
 diff --git a/programs/explorer/explorer.c b/programs/explorer/explorer.c
-index 1b900d0..23a4a84 100644
+index 1b900d0..a6efc3c 100644
 --- a/programs/explorer/explorer.c
 +++ b/programs/explorer/explorer.c
 @@ -44,8 +44,8 @@ WINE_DEFAULT_DEBUG_CHANNEL(explorer);

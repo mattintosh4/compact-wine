@@ -1,8 +1,8 @@
 diff --git a/configure b/configure
-index fae5c0a..27f4e18 100755
+index 3d85e03..be3a20c 100755
 --- a/configure
 +++ b/configure
-@@ -7882,7 +7882,7 @@ $wine_binary: main.o wine_info.plist
+@@ -7884,7 +7884,7 @@ $wine_binary: main.o wine_info.plist
  	\$(CC) -o \$@ $LDEXECFLAGS main.o \$(LIBWINE) \$(LIBPORT) \$(EXTRALIBS) \$(LDFLAGS) \$(LDRPATH_LOCAL)
  
  wine-installed: main.o wine_info.plist
@@ -11,7 +11,7 @@ index fae5c0a..27f4e18 100755
  "
      ;;
  
-@@ -17344,12 +17344,12 @@ wine_fn_config_program ipconfig enable_ipconfig install,po
+@@ -17347,12 +17347,12 @@ wine_fn_config_program ipconfig enable_ipconfig install,po
  wine_fn_config_program lodctr enable_lodctr install
  wine_fn_config_program mofcomp enable_mofcomp install
  wine_fn_config_program mshta enable_mshta install
@@ -26,7 +26,7 @@ index fae5c0a..27f4e18 100755
  wine_fn_config_program oleview enable_oleview install,po
  wine_fn_config_program ping enable_ping install
  wine_fn_config_program plugplay enable_plugplay install
-@@ -17357,10 +17357,10 @@ wine_fn_config_program presentationfontcache enable_presentationfontcache instal
+@@ -17360,10 +17360,10 @@ wine_fn_config_program presentationfontcache enable_presentationfontcache instal
  wine_fn_config_program progman enable_progman install,po
  wine_fn_config_program reg enable_reg install,po
  wine_fn_config_program regasm enable_regasm install
@@ -39,7 +39,7 @@ index fae5c0a..27f4e18 100755
  wine_fn_config_program rpcss enable_rpcss clean,install
  wine_fn_config_program rundll.exe16 enable_win16 install
  wine_fn_config_program rundll32 enable_rundll32 install
-@@ -17381,17 +17381,17 @@ wine_fn_config_program uninstaller enable_uninstaller install,po
+@@ -17385,17 +17385,17 @@ wine_fn_config_program uninstaller enable_uninstaller install,po
  wine_fn_config_program unlodctr enable_unlodctr install
  wine_fn_config_program view enable_view install,po
  wine_fn_config_program wevtutil enable_wevtutil install
@@ -170,10 +170,10 @@ index 8f93e7f..3ed80e9 100644
          {IDS_SHV_COLUMN3,  SHCOLSTATE_TYPE_STR  | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 10},
          {IDS_SHV_COLUMN4,  SHCOLSTATE_TYPE_DATE | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 12},
 diff --git a/dlls/wined3d/wined3d_private.h b/dlls/wined3d/wined3d_private.h
-index 9e209d9..5611b05 100644
+index b3cb884..33868b2 100644
 --- a/dlls/wined3d/wined3d_private.h
 +++ b/dlls/wined3d/wined3d_private.h
-@@ -1438,7 +1438,7 @@ enum wined3d_pci_device
+@@ -1455,7 +1455,7 @@ enum wined3d_pci_device
      CARD_NVIDIA_GEFORCE_GTX275      = 0x05e6,
      CARD_NVIDIA_GEFORCE_GTX280      = 0x05e1,
      CARD_NVIDIA_GEFORCE_315M        = 0x0a7a,
@@ -183,10 +183,10 @@ index 9e209d9..5611b05 100644
      CARD_NVIDIA_GEFORCE_GT325M      = 0x0a35,
      CARD_NVIDIA_GEFORCE_GT330       = 0x0ca0,
 diff --git a/dlls/winemac.drv/cocoa_app.m b/dlls/winemac.drv/cocoa_app.m
-index dff6977..c9a7a06 100644
+index d454513..3faa851 100644
 --- a/dlls/winemac.drv/cocoa_app.m
 +++ b/dlls/winemac.drv/cocoa_app.m
-@@ -217,40 +217,40 @@ - (void) transformProcessToForeground
+@@ -219,40 +219,40 @@ - (void) transformProcessToForeground
              bundleName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleNameKey];
  
              if ([bundleName length])
@@ -241,10 +241,10 @@ index dff6977..c9a7a06 100644
              [item setTitle:@"Window"];
              [item setSubmenu:submenu];
 diff --git a/dlls/winemac.drv/cocoa_window.m b/dlls/winemac.drv/cocoa_window.m
-index 7ead126..2a199f9 100644
+index 48d0651..9d112b0 100644
 --- a/dlls/winemac.drv/cocoa_window.m
 +++ b/dlls/winemac.drv/cocoa_window.m
-@@ -1132,6 +1132,9 @@ - (void) orderBelow:(WineWindow*)prev orAbove:(WineWindow*)next activate:(BOOL)a
+@@ -1140,6 +1140,9 @@ - (void) orderBelow:(WineWindow*)prev orAbove:(WineWindow*)next activate:(BOOL)a
              [NSApp unhide:nil];
              wasVisible = [self isVisible];
  
@@ -255,7 +255,7 @@ index 7ead126..2a199f9 100644
                  [NSApp activateIgnoringOtherApps:YES];
  
 diff --git a/dlls/winemac.drv/keyboard.c b/dlls/winemac.drv/keyboard.c
-index a46d324..66cc4f2 100644
+index 9c0c3a6..07d16e8 100644
 --- a/dlls/winemac.drv/keyboard.c
 +++ b/dlls/winemac.drv/keyboard.c
 @@ -238,14 +238,14 @@ static const struct {
@@ -337,14 +337,14 @@ index 95e4798..69ecf06 100644
  IN_SRCS = \
  	wine.inf.in \
 diff --git a/loader/main.c b/loader/main.c
-index ac67290..866e99a 100644
+index ac67290..4d7ed34 100644
 --- a/loader/main.c
 +++ b/loader/main.c
 @@ -87,6 +87,11 @@ static inline void reserve_area( void *addr, size_t size )
  static void check_command_line( int argc, char *argv[] )
  {
      static const char usage[] =
-+        "Wine version 1.7.16  Nihonshu binary edition (2014-05-19)\n"
++        "Wine version 1.7.19  Nihonshu binary edition (2014-05-22)\n"
 +        "  Build: Darwin Kernel Version 10.8.0: Tue Jun  7 16:33:36 PDT 2011; root:xnu-1504.15.3~1/RELEASE_I386\n"
 +        "  Target: i686-apple-darwin10.8.0\n"
 +        "  Configured with: --prefix=/usr/local/wine --build=i686-apple-darwin10.8.0 --disable-win16 --with-cms --with-coreaudio --with-cups --with-curses --with-freetype --with-jpeg --with-openal --with-opencl --with-opengl --with-png --with-pthread --with-tiff --with-xml --with-xslt --with-zlib --with-x --x-inc=/opt/X11/include --x-lib=/opt/X11/lib --without-capi --without-gphoto --without-gsm --without-oss --without-sane --without-v4l\n"
@@ -353,10 +353,10 @@ index ac67290..866e99a 100644
          "       wine --help                   Display this help and exit\n"
          "       wine --version                Output version information and exit";
 diff --git a/po/ja.po b/po/ja.po
-index 5db084e..1d06138 100644
+index 2a2cf56..cbc35c4 100644
 --- a/po/ja.po
 +++ b/po/ja.po
-@@ -7917,7 +7917,7 @@ msgstr "プログラム"
+@@ -8119,7 +8119,7 @@ msgstr "プログラム"
  
  #: shell32.rc:204
  msgid "My Documents"

@@ -1,5 +1,5 @@
 diff --git a/dlls/winemac.drv/keyboard.c b/dlls/winemac.drv/keyboard.c
-index a46d324..66cc4f2 100644
+index 9c0c3a6..07d16e8 100644
 --- a/dlls/winemac.drv/keyboard.c
 +++ b/dlls/winemac.drv/keyboard.c
 @@ -238,14 +238,14 @@ static const struct {
