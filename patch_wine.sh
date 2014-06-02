@@ -1,7 +1,7 @@
 sed "s|@WINE_VERSION@|$(cat VERSION)|
      s|@UNAME@|$(uname -v)|
-     s|@TRIPLE@|$TRIPLE|
-     s|@CONFIGURE_ARGS@|${configure_args[*]}|
+     s|@TRIPLE@|$__TRIPLE__|
+     s|@CONFIGURE_ARGS@|${args[*]}|
      s|@DATE@|`date +%F`|" <<\! | patch -Np1
 diff --git a/loader/main.c b/loader/main.c
 index ac67290..7cdafeb 100644
