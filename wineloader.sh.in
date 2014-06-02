@@ -6,9 +6,9 @@
 run()
 {
     case ${WINELOADERNOEXEC+:} in
-    :) printf '\e[1;30m%s\e[m\n' "$*" ;;
-    *) printf '\e[1;32m%s\e[m\n' "$*" ;;
-    esac >&2
+    :) printf '\e[1;30m%s\e[m\n' "$*" >&2;;
+    *) printf '\e[1;32m%s\e[m\n' "$*" >&2;;
+    esac
     exec wine "$@"
 }
 
@@ -53,14 +53,16 @@ load_custom_inf()
 }
 check_timestamp()
 {
-    if test -e "$WINEPREFIX"/.update-timestamp
-    then
-        set --  `stat -f %c -t %s "$PREF"/share/wine/wine.inf` `cat "$WINEPREFIX"/.update-timestamp`
-        test "$1" -gt "$2" || return 0
-        wine 'C:\windows\system32\wineboot.exe' --update
-    else
+    read 2>/dev/null <"$WINEPREFIX"/.update-timestamp || :
+    case $REPLY in
+    '')
         wine 'C:\windows\system32\wineboot.exe' --init
-    fi
+        ;;
+    *)
+        set -- `stat -f %c -t %s "$PREF"/share/wine/wine.inf`
+        test "$1" -gt "$REPLY" || return 0
+        ;;
+    esac
     load_custom_inf
 }
 check_timestamp
