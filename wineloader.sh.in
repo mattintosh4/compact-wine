@@ -1,74 +1,47 @@
-#!/bin/ksh
-#
-# WINELOADER  Copyright (C) 2014  mattintosh4, https://github.com/mattintosh4
-#
+#!/bin/ksh -e
 
-run()
-{
-    case ${WINELOADERNOEXEC+:} in
-    :) printf '\e[1;30m%s\e[m\n' "$*" >&2;;
-    *) printf '\e[1;32m%s\e[m\n' "$*" >&2;;
-    esac
-    exec wine "$@"
-}
-
-
-
-# GENERAL ----------------------------------------------------------------------
+! (($DEBUG)) || set -x
+! (($WINELOADERNOEXEC)) || exec $WINE "$@"
 
 case $0 in
-*/*) PREF=`cd "${0%/*}"/.. && pwd` ;;
-*  ) PREF=`cd           .. && pwd` ;;
+*/*) prefix=`cd "${0%/*}"/.. && pwd` ;;
+*  ) prefix=`cd           .. && pwd` ;;
 esac
 
-PATH=$PREF/libexec:/usr/bin:/bin:/usr/sbin:/sbin
-
-# RECURSIVE EXECUTION
-${WINELOADERNOEXEC+run "$@"}
-
-# CONDITIONAL SKIPPING
-case $1 in ''|--help|--version) exec wine "$@" ;; esac
-
-# ENVIRONMENT VARIABLE
 set -a
-case $LANG          in '') LANG=ja_JP.UTF-8       ;; esac
-case $WINEPREFIX    in '') WINEPREFIX=$HOME/.wine ;; esac
-case ${WINEDEBUG+:} in '') WINEDEBUG=fixme-all    ;; esac
+PATH=$prefix/libexec:$prefix/bin:/usr/bin:/bin
+WINE=$prefix/libexec/wine
+WINEDEBUG=${WINEDEBUG-fixme-all}
 set +a
 
-# WINEPREFIX CREATION
-load_custom_inf()
-{
-    set -- "$PREF"/share/wine/inf/*.inf
-    test -f "$1" || return 0
-    for f
-    {
-        # keep current process
-        (
-            run 'C:\windows\system32\rundll32.exe' \
-                setupapi,InstallHinfSection DefaultInstall 128 \
-                '\\?\'unix"$f"
-        )
-    }
-}
+case $1 in
+''|--help|--version)
+    exec $WINE "$@"
+    ;;
+esac
+
 check_timestamp()
 {
-    read 2>/dev/null <"$WINEPREFIX"/.update-timestamp || :
-    case $REPLY in
-    '')
-        wine 'C:\windows\system32\wineboot.exe' --init
-        ;;
-    *)
-        set -- `stat -f %c -t %s "$PREF"/share/wine/wine.inf`
-        test "$1" -gt "$REPLY" || return 0
-        ;;
+    _install_inf()
+    {
+        for f in "$prefix"/share/wine/inf/*.inf
+        {
+            test -f "$f" || continue
+            $WINE 'C:\windows\system32\rundll32.exe' \
+              setupapi,InstallHinfSection DefaultInstall 128 \
+              '\\?\'unix"$f"
+        }
+    }
+
+    read timestamp_ctime 2>/dev/null <"${WINEPREFIX-$HOME/.wine}"/.update-timestamp || :
+    case ${timestamp_ctime:+set} in
+    set)
+        ((`stat -f inf_ctime=%c -t %s "$prefix"/share/wine/wine.inf`))
+        (($timestamp_ctime < $inf_ctime)) || return 0
     esac
-    load_custom_inf
+
+    _install_inf
 }
 check_timestamp
 
-
-
-# EXECUTION --------------------------------------------------------------------
-
-run "$@"
+exec $WINE "$@"
