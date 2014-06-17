@@ -324,8 +324,11 @@ make_distfile()
     ln $PROJECTROOT/wineloader.sh.in $W_BINDIR/wine
     mkdir -p                                  $W_DATADIR/wine/inf
     ln $PROJECTROOT/osx-wine-inf/osx-wine.inf $W_DATADIR/wine/inf
-    
-    $PROJECTROOT/patch_autogen.sh $PROJECTROOT
+
+    WINE_VERSION=`$INSTALL_PREFIX/bin/wine --version`
+    sed "/@PROJECTROOT@/s||$PROJECTROOT|g
+         /@WINE_VERSION@/s||$WINE_VERSION|g
+    " $PROJECTROOT/patch_autogen.sh.in | sh -s
 }
 
 select n in \
