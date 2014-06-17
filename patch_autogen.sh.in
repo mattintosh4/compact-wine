@@ -4,7 +4,7 @@ set -e
 
 PATH=/usr/bin:/bin:/usr/sbin:/sbin
 
-set -- @PROJECTROOT@/patch_archive/`date +%Y%m%d-%H%M%S`-@WINE_VERSION@
+set -- @PROJECTROOT@/patch_archive/`date +%Y%m%d%H%M%S`-@WINE_VERSION@
 mkdir -p $1
 cd $1
 csplit -sk @PROJECTROOT@/wine___all.diff '%diff --git%' '/diff --git/' '{100}' || :

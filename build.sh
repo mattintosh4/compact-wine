@@ -318,17 +318,22 @@ make_distfile()
 
     rm -rf $LIBDIR/*.la
     rm -rf $LIBDIR/pkgconfig
-    
-    mkdir -p          $W_PREFIX/libexec
-    mv $W_BINDIR/wine $W_PREFIX/libexec
-    ln $PROJECTROOT/wineloader.sh.in $W_BINDIR/wine
-    mkdir -p                                  $W_DATADIR/wine/inf
-    ln $PROJECTROOT/osx-wine-inf/osx-wine.inf $W_DATADIR/wine/inf
+
+#    mkdir -p          $W_PREFIX/libexec
+#    mv $W_BINDIR/wine $W_PREFIX/libexec
+#    ln $PROJECTROOT/wineloader.sh.in $W_BINDIR/wine
+
+    install -d                                  ${W_DATADIR}/wine/inf
+    ln ${PROJECTROOT}/osx-wine-inf/osx-wine.inf ${W_DATADIR}/wine/inf
+
+    install -m 0644 ${SRCROOT}/wine/LICENSE ${W_DATADIR}/wine
+    install -d                              ${W_DATADIR}/nihonshu
+    install -m 0644 ${PROJECTROOT}/LICENSE  ${W_DATADIR}/nihonshu
 
     WINE_VERSION=`cat VERSION`
-    sed "/@PROJECTROOT@/s||$PROJECTROOT|g
-         /@WINE_VERSION@/s||$WINE_VERSION|g
-    " $PROJECTROOT/patch_autogen.sh.in | sh -s
+    sed "/@PROJECTROOT@/s||${PROJECTROOT}|g
+         /@WINE_VERSION@/s||${WINE_VERSION}|g
+    " ${PROJECTROOT}/patch_autogen.sh.in | sh -s
 }
 
 select n in \
