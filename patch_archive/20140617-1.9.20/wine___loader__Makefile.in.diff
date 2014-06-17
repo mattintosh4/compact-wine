@@ -1,0 +1,16 @@
+diff --git a/loader/Makefile.in b/loader/Makefile.in
+index 95e4798..69ecf06 100644
+--- a/loader/Makefile.in
++++ b/loader/Makefile.in
+@@ -5,10 +5,7 @@ C_SRCS = \
+ 	preloader.c
+ 
+ MANPAGES = \
+-	wine.de.UTF-8.man.in \
+-	wine.fr.UTF-8.man.in \
+-	wine.man.in \
+-	wine.pl.UTF-8.man.in
++	wine.man.in
+ 
+ IN_SRCS = \
+ 	wine.inf.in \

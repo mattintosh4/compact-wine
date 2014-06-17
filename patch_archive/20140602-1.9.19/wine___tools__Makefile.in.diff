@@ -1,0 +1,22 @@
+diff --git a/tools/Makefile.in b/tools/Makefile.in
+index 0f652f0..264c034 100644
+--- a/tools/Makefile.in
++++ b/tools/Makefile.in
+@@ -2,8 +2,6 @@ PROGRAMS = \
+ 	make_xftmpl$(EXEEXT)
+ 
+ MANPAGES = \
+-	winemaker.de.UTF-8.man.in \
+-	winemaker.fr.UTF-8.man.in \
+ 	winemaker.man.in
+ 
+ C_SRCS = \
+@@ -23,8 +21,6 @@ make_xftmpl$(EXEEXT): make_xftmpl.o
+ .PHONY: install install-lib install-dev uninstall
+ 
+ install install-lib::
+-	$(INSTALL_DATA) $(srcdir)/wine.desktop $(DESTDIR)$(datadir)/applications/wine.desktop
+-	-$(UPDATE_DESKTOP_DATABASE)
+ 
+ install install-dev:: install-man-pages
+ 	$(INSTALL_SCRIPT) $(srcdir)/winemaker $(DESTDIR)$(bindir)/winemaker

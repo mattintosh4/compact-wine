@@ -1,0 +1,13 @@
+diff --git a/dlls/shell32/shfldr_mycomp.c b/dlls/shell32/shfldr_mycomp.c
+index ac7fd48..76da145 100644
+--- a/dlls/shell32/shfldr_mycomp.c
++++ b/dlls/shell32/shfldr_mycomp.c
+@@ -81,7 +81,7 @@ static inline IMyComputerFolderImpl *impl_from_IPersistFolder2(IPersistFolder2 *
+ */
+ 
+ static const shvheader mycomputer_header[] = {
+-    {IDS_SHV_COLUMN1, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 15},
++    {IDS_SHV_COLUMN1, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 30},
+     {IDS_SHV_COLUMN3, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 10},
+     {IDS_SHV_COLUMN6, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 10},
+     {IDS_SHV_COLUMN7, SHCOLSTATE_TYPE_STR | SHCOLSTATE_ONBYDEFAULT, LVCFMT_RIGHT, 10},
