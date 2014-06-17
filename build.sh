@@ -325,7 +325,7 @@ make_distfile()
     mkdir -p                                  $W_DATADIR/wine/inf
     ln $PROJECTROOT/osx-wine-inf/osx-wine.inf $W_DATADIR/wine/inf
 
-    WINE_VERSION=`$INSTALL_PREFIX/bin/wine --version`
+    WINE_VERSION=`cat VERSION`
     sed "/@PROJECTROOT@/s||$PROJECTROOT|g
          /@WINE_VERSION@/s||$WINE_VERSION|g
     " $PROJECTROOT/patch_autogen.sh.in | sh -s
