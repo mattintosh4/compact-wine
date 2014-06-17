@@ -4,8 +4,10 @@ set -o pipefail
 set -u
 set -x
 
+MACOSX_DEPLOYMENT_TARGET=`/usr/bin/sw_vers -productVersion | cut -d. -f-2`
+SDKROOT=`/usr/bin/xcodebuild -version -sdk macosx$MACOSX_DEPLOYMENT_TARGET | sed -n '/^Path: /s///p'`
+
 __CS_PATH__=/usr/bin:/bin:/usr/sbin:/sbin
-__SDKROOT__=/Developer/SDKs/MacOSX10.6.sdk
 __TRIPLE__=i686-apple-darwin`uname -r`
 __MACPORTSPREFIX__=/opt/local
 __TOOLPREFIX__AUTOTOOLS__=$__MACPORTSPREFIX__/libexec/autotools
@@ -54,11 +56,11 @@ CXX=g++-apple-4.2
 CFLAGS="-m32 -arch i386 -O3 -march=core2 -mtune=core2"
 CXXFLAGS=$CFLAGS
 CPPFLAGS=
-CPPFLAGS+=" -isysroot $__SDKROOT__"
+CPPFLAGS+=" -isysroot $SDKROOT"
 CPPFLAGS+=" -I$INCDIR"
 LDFLAGS=" -arch i386"
 LDFLAGS+=" -Wl,-headerpad_max_install_names"
-LDFLAGS+=" -Wl,-syslibroot,$__SDKROOT__ "
+LDFLAGS+=" -Wl,-syslibroot,$SDKROOT"
 LDFLAGS+=" -Z -L$LIBDIR -L/usr/lib -F/System/Library/Frameworks"
 
 INSTALL_NAME_TOOL=$__MACPORTSPREFIX__/bin/install_name_tool
