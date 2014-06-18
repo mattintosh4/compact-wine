@@ -73,6 +73,8 @@ tar xf wine-1.7.20_nihonshu.tar.bz2
 LANG=ja_JP.UTF-8 /usr/local/wine/bin/wine program.exe
 ```
 
+_winecfg_ や _regedit_、_msiexec_ などのリダイレクト系コマンドは含まれておりません。お手数ですが _wine_ コマンドから実行してください。
+
 アンインストールは解凍したディレクトリを削除するだけです。Wine が生成するファイルのアンインストールに関しては Wine 公式 Wiki に掲載されていますのでそちらを参照してください。
 
 尚、一部の Windows アプリケーションで _glu32.dll_ を呼び出すものがあります。これは XQuartz のライブラリにリンクしていますので必要な場合は以下のページからダウンロードしてインストールしてください。
