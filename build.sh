@@ -5,6 +5,11 @@ set -u
 set -x
 
 MACOSX_DEPLOYMENT_TARGET=`/usr/bin/sw_vers -productVersion | cut -d. -f-2`
+case ${MACOSX_DEPLOYMENT_TARGET} in
+10.9)
+    MACOSX_DEPLOYMENT_TARGET=`bc <<<"${MACOSX_DEPLOYMENT_TARGET} - 0.1"`
+    ;;
+esac
 SDKROOT=`/usr/bin/xcodebuild -version -sdk macosx$MACOSX_DEPLOYMENT_TARGET | sed -n '/^Path: /s///p'`
 
 __CS_PATH__=/usr/bin:/bin:/usr/sbin:/sbin
@@ -46,12 +51,22 @@ PATH+=:$__TOOLPREFIX__GETTEXT__
 PATH+=:$__TOOLPREFIX__AUTOTOOLS__
 PATH+=:$__TOOLPREFIX__XZ__
 PATH+=:$__CS_PATH__
+PATH=${PATH#?}
 
 set -a
 CCACHE_PATH=
+CCACHE_PATH+=:/usr/bin
 CCACHE_PATH+=:$__MACPORTSPREFIX__/bin
-CC=gcc-apple-4.2
-CXX=g++-apple-4.2
+CCACHE_PATH=${CCACHE_PATH#?}
+
+case ${MACOSX_DEPLOYMENT_TARGET} in
+10.8|10.9)
+    CC=gcc CXX=g++
+    ;;
+*)
+    CC=gcc-apple-4.2 CXX=g++-apple-4.2
+    ;;
+esac
 
 CFLAGS="-m32 -arch i386 -O3 -march=core2 -mtune=core2"
 CXXFLAGS=$CFLAGS
@@ -88,6 +103,20 @@ clone_repos()
 }
 
 #-------------------------------------------------------------------------------
+
+build_zlib()
+{
+    clone_repos zlib
+    git_checkout remotes/origin/master
+    args=(
+        --prefix=${PREFIX}
+        --libdir=${LIBDIR}
+        --archs="-arch i386"
+    )
+    ./configure "${args[@]}"
+    make -j3
+    make install
+}
 
 build_freetype()
 {
@@ -139,7 +168,7 @@ build_libjpeg()
         --disable-static
         --with-jpeg8
     )
-    configure ${args[@]}
+    ./configure ${args[@]}
     make -j3 V=1
     make install
 }
@@ -368,6 +397,7 @@ do
 case ${n:-REPLY} in
 wine-all)
     init
+    build_zlib
     build_xz
     build_libpng
     build_freetype
