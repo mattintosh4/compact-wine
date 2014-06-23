@@ -1,0 +1,13 @@
+diff --git a/loader/wine_info.plist.in b/loader/wine_info.plist.in
+index aea99e5..9ab573e 100644
+--- a/loader/wine_info.plist.in
++++ b/loader/wine_info.plist.in
+@@ -20,6 +20,8 @@
+     <string>????</string>
+     <key>CFBundleVersion</key>
+     <string>@PACKAGE_VERSION@</string>
++    <key>NSHighResolutionCapable</key>
++    <true/>
+     <key>NSPrincipalClass</key>
+     <string>WineApplication</string>
+ </dict>
