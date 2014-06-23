@@ -21,11 +21,49 @@ index ac67290..7cdafeb 100644
          "       wine --version                Output version information and exit";
 !
 
-sed -i '' '/^wine_fn_config_program/s/,installbin,manpage//' configure
-sed -i '' "/^wine-installed: main.o wine_info.plist/{n;s|\$| -Wl,-rpath,$XLIBDIR -Wl,-rpath,/usr/lib|;}" configure
+sed -i '' -f /dev/fd/0 configure <<!
+/^wine_fn_config_program/s/,installbin,manpage//
+/^wine-installed: main.o wine_info.plist/{
+    n
+    s|\$| -Wl,-rpath,/usr/lib|
+}
+!
 
-sed -i '' '/{IDS_SHV_COLUMN1,/s/[0-9][0-9]}/30}/' dlls/shell32/recyclebin.c dlls/shell32/shfldr_*.c
+sed -i '' -f /dev/fd/0 \
+dlls/shell32/recyclebin.c \
+dlls/shell32/shfldr_*.c <<!
+/{IDS_SHV_COLUMN1,/s/[0-9][0-9]}/30}/
+!
 
-cp -p programs/regedit/folder.ico     dlls/shell32/folder.ico
-cp -p programs/regedit/folder.ico     dlls/shell32/mydocs.ico
-cp -p programs/regedit/folderopen.ico dlls/shell32/folder_open.ico
+/opt/local/bin/xz -dc ${SRCROOT}/gnome-icon-theme-3.12.0.tar.xz \
+| tar xf - -C ${TMPDIR}
+
+#places/user-home.png
+#places/user-bookmarks.png
+
+icon_pairs=(
+    places/folder.png,folder.ico
+    places/folder-documents.png,mydocs.ico
+    places/user-trash.png,trash_file.ico
+    places/user-desktop.png,desktop.ico
+    status/folder-open.png,folder_open.ico
+    devices/drive-harddisk.png,drive.ico
+    devices/drive-optical.png,cdrom.ico
+    devices/drive-removable-media.png,floppy.ico
+    devices/computer.png,mycomputer.ico
+    mimetypes/text-x-generic.png,document.ico
+)
+
+for f in ${icon_pairs[@]}
+{
+    ifs=${IFS} IFS=,
+    set -- ${f}
+    IFS=${ifs}
+
+    /opt/local/bin/convert \
+        ${TMPDIR}/gnome-icon-theme-3.12.0/gnome/{\
+16x16,\
+24x24,\
+32x32,\
+48x48}/${1} dlls/shell32/${2}
+}

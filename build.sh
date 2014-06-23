@@ -199,7 +199,8 @@ build_libpng()
 build_wine()
 {
     clone_repos wine
-    git_checkout remotes/origin/master
+#    git_checkout remotes/origin/master
+    git_checkout wine-1.7.20
     ## This variable is needed patching.
     args=(
         --prefix=${W_PREFIX}
@@ -273,7 +274,7 @@ make_distfile()
         src=$1
         set -- $(otool -XD $src)
         case $1 in
-        $LIBDIR/*)
+        $LIBDIR/*|/opt/X11/lib*)
             (
                 set -x
                 $INSTALL_NAME_TOOL -id @rpath/${1##*/} $src
@@ -291,7 +292,7 @@ make_distfile()
         {
             set -- $r
             case $1 in
-            $LIBDIR/*)
+            $LIBDIR/*|/opt/X11/lib/*)
                 (
                     set -x
                     $INSTALL_NAME_TOOL -change $1 @rpath/${1##*/} $src
@@ -300,6 +301,18 @@ make_distfile()
             esac
         }
     }
+
+    _xlibcopy()
+    {
+        set -- `otool -XL $1 | grep -o '/opt/X11/lib/.*\.dylib'`
+        for f
+        {
+            ! test -f ${LIBDIR}/${f##*/} || continue
+            ditto --arch i386 ${f} ${LIBDIR}
+            _xlibcopy ${f}
+        }
+    }
+    _xlibcopy $LIBDIR/wine/glu32.dll.so
 
     set +x
     IFS=$'\n'
@@ -330,11 +343,17 @@ make_distfile()
     install -d                              ${W_DATADIR}/nihonshu
     install -m 0644 ${PROJECTROOT}/LICENSE  ${W_DATADIR}/nihonshu
 
+    tar cjf ${INSTALL_PREFIX%/*}/wine-$(cut -d' ' -f3 ${TMPDIR}/wine/VERSION)_nihonshu.tar.bz2 \
+        -C ${INSTALL_PREFIX%/*} wine
+
     WINE_VERSION=`cat VERSION`
     sed "/@PROJECTROOT@/s||${PROJECTROOT}|g
          /@WINE_VERSION@/s||${WINE_VERSION}|g
     " ${PROJECTROOT}/patch_autogen.sh.in | sh -s
 }
+
+
+mkdir -p ${TMPDIR}
 
 select n in \
 wine-all \
