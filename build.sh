@@ -4,13 +4,10 @@ set -o pipefail
 set -u
 set -x
 
-MACOSX_DEPLOYMENT_TARGET=`/usr/bin/sw_vers -productVersion | cut -d. -f-2`
-case ${MACOSX_DEPLOYMENT_TARGET} in
-10.9)
-    MACOSX_DEPLOYMENT_TARGET=`bc <<<"${MACOSX_DEPLOYMENT_TARGET} - 0.1"`
-    ;;
-esac
-SDKROOT=`/usr/bin/xcodebuild -version -sdk macosx$MACOSX_DEPLOYMENT_TARGET | sed -n '/^Path: /s///p'`
+MACOSX_DEPLOYMENT_TARGET=`sw_vers -productVersion \
+    | cut -d. -f-2`
+SDKROOT=`xcodebuild -version -sdk macosx${MACOSX_DEPLOYMENT_TARGET} \
+    | sed -n '/^Path: /s///p'`
 
 __CS_PATH__=/usr/bin:/bin:/usr/sbin:/sbin
 __TRIPLE__=i686-apple-darwin`uname -r`
@@ -59,17 +56,10 @@ CCACHE_PATH+=:/usr/bin
 CCACHE_PATH+=:$__MACPORTSPREFIX__/bin
 CCACHE_PATH=${CCACHE_PATH#?}
 
-case ${MACOSX_DEPLOYMENT_TARGET} in
-10.8|10.9)
-    CC=gcc CXX=g++
-    ;;
-*)
-    CC=gcc-apple-4.2 CXX=g++-apple-4.2
-    ;;
-esac
-
+CC=gcc-apple-4.2
+CXX=g++-apple-4.2
 CFLAGS="-m32 -arch i386 -O3 -march=core2 -mtune=core2"
-CXXFLAGS=$CFLAGS
+CXXFLAGS=${CFLAGS}
 CPPFLAGS=
 CPPFLAGS+=" -isysroot $SDKROOT"
 CPPFLAGS+=" -I$INCDIR"
@@ -81,9 +71,11 @@ LDFLAGS+=" -Z -L$LIBDIR -L/usr/lib -F/System/Library/Frameworks"
 INSTALL_NAME_TOOL=$__MACPORTSPREFIX__/bin/install_name_tool
 
 PKG_CONFIG=$__MACPORTSPREFIX__/bin/pkg-config
+PKG_CONFIG_PATH=
 PKG_CONFIG_LIBDIR=
-PKG_CONFIG_LIBDIR+=:$LIBDIR/pkgconfig
+PKG_CONFIG_LIBDIR+=:${LIBDIR}/pkgconfig
 PKG_CONFIG_LIBDIR+=:/usr/lib/pkgconfig
+PKG_CONFIG_LIBDIR=${PKG_CONFIG_LIBDIR#?}
 set +a
 
 #-------------------------------------------------------------------------------
@@ -257,9 +249,13 @@ build_wine()
         --without-oss
         --without-sane
         --without-v4l
+#        "XML2_CFLAGS=-I/usr/include/libxml2"
+#        "XML2_LIBS=-L/usr/lib -lxml2"
+#        "XSLT_CFLAGS=-I/usr/include -I/usr/include/libxml2"
+#        "XSLT_LIBS=-L/usr/lib -lxslt -lxml2"
     )
     patch_wine
-    ./configure ${args[@]}
+    ./configure "${args[@]}"
     make -j3
     make install
 }
