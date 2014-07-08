@@ -221,7 +221,7 @@ build_wine()
 {
     clone_repos wine
 #    git_checkout remotes/origin/master
-    git_checkout wine-1.7.20
+    git_checkout wine-1.7.21
     ## This variable is needed patching.
     args=(
         --prefix=${W_PREFIX}
