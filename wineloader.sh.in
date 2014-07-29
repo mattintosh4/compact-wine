@@ -1,7 +1,7 @@
 #!/bin/ksh -e
 
 ! (($DEBUG)) || set -x
-! (($WINELOADERNOEXEC)) || exec $WINE "$@"
+! (($WINELOADERNOEXEC)) || exec "$WINE" "$@"
 
 case $0 in
 */*) prefix=`cd "${0%/*}"/.. && pwd` ;;
@@ -9,39 +9,40 @@ case $0 in
 esac
 
 set -a
-PATH=$prefix/libexec:$prefix/bin:/usr/bin:/bin
-WINE=$prefix/libexec/wine
+LANG=${LANG-ja_JP.UTF-8}
+PATH=$prefix/bin:/usr/bin:/bin
+WINE=$prefix/bin/wine
+WINEPREFIX=${WINEPREFIX:-$HOME/.wine}
 WINEDEBUG=${WINEDEBUG-fixme-all}
+XDG_CACHE_HOME=${XDG_CACHE_HOME-$HOME/Library/Caches/Wine}
+XDG_CONFIG_HOME=${XDG_CONFIG_HOME-$HOME/Library/Caches/Wine}
+XDG_DATA_HOME=${XDG_DATA_HOME-$HOME/Library/Caches/Wine}
 set +a
 
 case $1 in
 ''|--help|--version)
-    exec $WINE "$@"
-    ;;
+  exec "$WINE" "$@"
+  ;;
 esac
 
 check_timestamp()
 {
-    _install_inf()
-    {
-        for f in "$prefix"/share/wine/inf/*.inf
-        {
-            test -f "$f" || continue
-            $WINE 'C:\windows\system32\rundll32.exe' \
-              setupapi,InstallHinfSection DefaultInstall 128 \
-              '\\?\'unix"$f"
-        }
-    }
+  read timestamp_ctime 2>/dev/null <"$WINEPREFIX"/.update-timestamp || :
+  case ${timestamp_ctime:+set} in
+  set)
+    ((`stat -f inf_ctime=%c -t %s "$prefix"/share/wine/wine.inf`))
+    (($timestamp_ctime < $inf_ctime)) || return 0
+  esac
 
-    read timestamp_ctime 2>/dev/null <"${WINEPREFIX-$HOME/.wine}"/.update-timestamp || :
-    case ${timestamp_ctime:+set} in
-    set)
-        ((`stat -f inf_ctime=%c -t %s "$prefix"/share/wine/wine.inf`))
-        (($timestamp_ctime < $inf_ctime)) || return 0
-    esac
-
-    _install_inf
+  for f in "$prefix"/share/wine/inf/*.inf
+  {
+    test -f "$f" || continue
+    "$WINE" 'C:\windows\system32\rundll32.exe' \
+      setupapi,InstallHinfSection DefaultInstall 128 \
+      '\\?\'unix"$f"
+  }
 }
+
 check_timestamp
 
-exec $WINE "$@"
+exec "$WINE" "$@"

@@ -221,7 +221,7 @@ build_wine()
 {
     clone_repos wine
 #    git_checkout remotes/origin/master
-    git_checkout wine-1.7.21
+    git_checkout wine-1.7.23
     ## This variable is needed patching.
     args=(
         --prefix=${W_PREFIX}
@@ -361,22 +361,35 @@ make_distfile()
 #    mv $W_BINDIR/wine $W_PREFIX/libexec
 #    ln $PROJECTROOT/wineloader.sh.in $W_BINDIR/wine
 
+    # WINELOADER
+    install -m 0755 ${PROJECTROOT}/wineloader.sh.in ${W_BINDIR}/nihonshu
+
+    # INF
     install -d                                  ${W_DATADIR}/wine/inf
     ln ${PROJECTROOT}/osx-wine-inf/osx-wine.inf ${W_DATADIR}/wine/inf
 
-    install -m 0644 ${SRCROOT}/wine/LICENSE ${W_DATADIR}/wine
-    install -d                              ${W_DATADIR}/nihonshu
-    install -m 0644 ${PROJECTROOT}/LICENSE  ${W_DATADIR}/nihonshu
+    # DOC
+    install -m 0644 ${TMPDIR}/wine/LICENSE ${W_DATADIR}/wine
+    install -d                             ${W_DATADIR}/nihonshu
+    install -m 0644 ${PROJECTROOT}/LICENSE ${W_DATADIR}/nihonshu
 
-    tar cjf ${INSTALL_PREFIX%/*}/wine-$(cut -d' ' -f3 ${TMPDIR}/wine/VERSION)_nihonshu.tar.bz2 \
-        -C ${INSTALL_PREFIX%/*} wine
+    set -- \
+        `cut -d' ' -f3 ${TMPDIR}/wine/VERSION` \
+        `sw_vers -productVersion | cut -d. -f-2` \
+        `date +%Y%m%d`
+    tar cjf ${PROJECTROOT}/distfiles/wine-${1}_nihonshu_osx${2}_${3}.tar.bz2 -C ${INSTALL_PREFIX%/*} wine
 
     WINE_VERSION=`cat VERSION`
     sed "/@PROJECTROOT@/s||${PROJECTROOT}|g
          /@WINE_VERSION@/s||${WINE_VERSION}|g
     " ${PROJECTROOT}/patch_autogen.sh.in | sh -s
-}
 
+    for f in ${PROJECTROOT}/script.d/*.sh
+    {
+        test -f ${f} || continue
+        . ${f}
+    }
+}
 
 mkdir -p ${TMPDIR}
 

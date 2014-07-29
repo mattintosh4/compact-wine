@@ -1,2 +1,3 @@
 .DS_Store
 patch_autogen
+distfiles/*
