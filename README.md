@@ -53,18 +53,20 @@ http://matome.naver.jp/odai/2140238022377155001
 インストール・アンインストール
 ----------------------------------------
 
-アーカイブを適当な場所に解凍してください（理想は _/usr/local_ です）。パッケージのルートディレクトリ名は _wine_ ですので上書き等にご注意ください。
+Finder 等でアーカイブを適当な場所に解凍してください。理想は `/usr/local` ですが、アクセス権等がよくわからない場合はホームディレクトリでもかまいません。アーカイブ内のルートディレクトリ名は `wine` ですので上書き等にご注意ください。
 
-```sh
-tar xf wine-1.7.20_nihonshu.tar.bz2
-```
-
-以下、_/usr/local_ に解凍したものとして説明します。
+以下、`/usr/local` に解凍したものとして説明します。
 
 2014年06月現在、INF の自動インストールは無効になっていますので手動でインストールしてください。
 
 ```sh
 /usr/local/wine/bin/wine rundll32 setupapi,InstallHinfSection DefaultInstall 128 /usr/local/wine/share/wine/inf/osx-wine.inf
+```
+
+2014年07月30日以降のパッケージに関しては `nihonshu` というコマンドが追加されていますのでそちらを経由すると INF の自動インストールが行われます。
+
+```sh
+/usr/local/wine/bin/nihonshu wineboot
 ```
 
 ダイアログなどが英語で表示されてしまう場合は `LANG=ja_JP.UTF8` を設定してください。逆に英語で表示したい場合は `LANG=en_US.UTF-8` を設定してください。
@@ -73,11 +75,13 @@ tar xf wine-1.7.20_nihonshu.tar.bz2
 LANG=ja_JP.UTF-8 /usr/local/wine/bin/wine program.exe
 ```
 
-_winecfg_ や _regedit_、_msiexec_ などのリダイレクト系コマンドは含まれておりません。お手数ですが _wine_ コマンドから実行してください。
+`winecfg` や `regedit`、`msiexec` などのリダイレクト系コマンドは含まれておりません。お手数ですが `wine` コマンドから実行してください。
 
 アンインストールは解凍したディレクトリを削除するだけです。Wine が生成するファイルのアンインストールに関しては Wine 公式 Wiki に掲載されていますのでそちらを参照してください。
 
-尚、一部の Windows アプリケーションで _glu32.dll_ を呼び出すものがあります。これは XQuartz のライブラリにリンクしていますので必要な場合は以下のページからダウンロードしてインストールしてください。
+尚、一部の Windows アプリケーションで `glu32.dll` を呼び出すものがあります。これは XQuartz のライブラリにリンクしていますので必要な場合は以下のページからダウンロードしてインストールしてください。
+
+＊2014年07月30日以降のパッケージに関してはライブラリを内蔵していますので必須ではなくなりました。
 
 http://xquartz.macosforge.org/landing/
 
