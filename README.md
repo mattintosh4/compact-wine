@@ -13,8 +13,6 @@ Wine を日本語環境の OS X 向けにカスタマイズするプロジェク
 特徴
 ----------------------------------------
 
-変更点の詳細は[パッチ](https://github.com/mattintosh4/compact-wine/tree/master/patch_archive)を参照してください。
-
 -   __Xcode や MacPorts、Homebrew などの準備が不要__
 
     アーカイブを解凍するだけで使えます。（でも、もしかしたら不足しているライブラリがあるかもしれません）
@@ -39,6 +37,8 @@ Wine を日本語環境の OS X 向けにカスタマイズするプロジェク
 
     Wine エクスプローラのウィンドウサイズを 800×600 に変更しています。また、フォルダアイコンが水色ではなく黄色になっています。
 
+変更点の詳細は[パッチ](https://github.com/mattintosh4/compact-wine/tree/master/patch_archive)を参照してください。
+
 
 
 ダウンロード
@@ -57,33 +57,21 @@ Finder 等でアーカイブを適当な場所に解凍してください。理�
 
 以下、`/usr/local` に解凍したものとして説明します。
 
-2014年06月現在、INF の自動インストールは無効になっていますので手動でインストールしてください。
+2014年09月現在、`nihonshu` コマンドを使用した場合のみ拡張 INF のインストールが行われます。
 
 ```sh
-/usr/local/wine/bin/wine rundll32 setupapi,InstallHinfSection DefaultInstall 128 /usr/local/wine/share/wine/inf/osx-wine.inf
+/usr/local/wine/bin/nihonshu program.exe
 ```
-
-2014年07月30日以降のパッケージに関しては `nihonshu` というコマンドが追加されていますのでそちらを経由すると INF の自動インストールが行われます。
-
-```sh
-/usr/local/wine/bin/nihonshu wineboot
-```
-
-ダイアログなどが英語で表示されてしまう場合は `LANG=ja_JP.UTF8` を設定してください。逆に英語で表示したい場合は `LANG=en_US.UTF-8` を設定してください。
-
-```sh
-LANG=ja_JP.UTF-8 /usr/local/wine/bin/wine program.exe
-```
-
-`winecfg` や `regedit`、`msiexec` などのリダイレクト系コマンドは含まれておりません。お手数ですが `wine` コマンドから実行してください。
 
 アンインストールは解凍したディレクトリを削除するだけです。Wine が生成するファイルのアンインストールに関しては Wine 公式 Wiki に掲載されていますのでそちらを参照してください。
 
-尚、一部の Windows アプリケーションで `glu32.dll` を呼び出すものがあります。これは XQuartz のライブラリにリンクしていますので必要な場合は以下のページからダウンロードしてインストールしてください。
+20140902 では `nihonshu` コマンドを使用した場合のキャッシュフォルダが変更になりました。（注：この配置には誤りがあったため近日修正します）
 
-＊2014年07月30日以降のパッケージに関してはライブラリを内蔵していますので必須ではなくなりました。
-
-http://xquartz.macosforge.org/landing/
+|環境変数|パス|
+|:--|:--|
+|XDG\_CACHE\_HOME|$HOME/Library/Caches/Wine|
+|XDG\_CONFIG\_HOME|$HOME/Library/Caches/Wine|
+|XDG\_DATA\_HOME|$HOME/Library/Caches/Wine|
 
 
 
