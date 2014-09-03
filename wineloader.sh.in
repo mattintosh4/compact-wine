@@ -1,48 +1,90 @@
 #!/bin/ksh -e
 
-! (($DEBUG)) || set -x
-! (($WINELOADERNOEXEC)) || exec "$WINE" "$@"
+! ((${DEBUG})) || set -x
+! ((${WINELOADERNOEXEC})) || exec "${WINE}" "${@}"
 
-case $0 in
+PATH=/usr/bin:/bin; export PATH
+
+case ${0} in
 */*) prefix=`cd "${0%/*}"/.. && pwd` ;;
 *  ) prefix=`cd           .. && pwd` ;;
 esac
+PATH=${prefix}/bin:${PATH}
+WINE=${prefix}/bin/wine; export WINE
 
-set -a
-LANG=${LANG-ja_JP.UTF-8}
-PATH=$prefix/bin:/usr/bin:/bin
-WINE=$prefix/bin/wine
-WINEPREFIX=${WINEPREFIX:-$HOME/.wine}
-WINEDEBUG=${WINEDEBUG-fixme-all}
-XDG_CACHE_HOME=${XDG_CACHE_HOME-$HOME/Library/Caches/Wine}
-XDG_CONFIG_HOME=${XDG_CONFIG_HOME-$HOME/Library/Caches/Wine}
-XDG_DATA_HOME=${XDG_DATA_HOME-$HOME/Library/Caches/Wine}
-set +a
 
-case $1 in
+
+case ${1} in
 ''|--help|--version)
-  exec "$WINE" "$@"
+  exec "${WINE}" "${@}"
   ;;
 esac
 
+case ${LANG+set} in
+'')
+  LANG=ja_JP.UTF-8; export LANG
+  >&2 echo "LANG: ${LANG}"
+  ;;
+esac
+
+case ${WINEPREFIX:+set} in
+'')
+  WINEPREFIX=${HOME}/.wine; export WINEPREFIX
+  >&2 echo "WINEPREFIX: ${WINEPREFIX}"
+  ;;
+esac
+
+case ${WINEDEBUG+set} in
+'')
+  WINEDEBUG=fixme-all; export WINEDEBUG
+  >&2 echo "WINEDEBUG: ${WINEDEBUG}"
+  ;;
+esac
+
+case ${XDG_CACHE_HOME+set} in
+'')
+  XDG_CACHE_HOME=${HOME}/Library/Caches/Wine; export XDG_CACHE_HOME
+  >&2 echo "XDG_CACHE_HOME: ${XDG_CACHE_HOME}"
+  ;;
+esac
+
+case ${XDG_CONFIG_FILE+set} in
+'')
+  XDG_CONFIG_HOME=${WINEPREFIX}; export XDG_CONFIG_HOME
+  >&2 echo "XDG_CONFIG_HOME: ${XDG_CONFIG_HOME}"
+  ;;
+esac
+
+case ${XDG_DATA_HOME+set} in
+'')
+  XDG_DATA_HOME=${WINEPREFIX}; export XDG_DATA_HOME
+  >&2 echo "XDG_DATA_HOME: ${XDG_DATA_HOME}"
+  ;;
+esac
+
+
+
 check_timestamp()
 {
-  read timestamp_ctime 2>/dev/null <"$WINEPREFIX"/.update-timestamp || :
+  read timestamp_ctime 2>/dev/null <"${WINEPREFIX}"/.update-timestamp || :
   case ${timestamp_ctime:+set} in
   set)
-    ((`stat -f inf_ctime=%c -t %s "$prefix"/share/wine/wine.inf`))
-    (($timestamp_ctime < $inf_ctime)) || return 0
+    ((`stat -f inf_ctime=%c -t %s "${prefix}"/share/wine/wine.inf`))
+    ((${timestamp_ctime} < ${inf_ctime})) || return 0
   esac
 
-  for f in "$prefix"/share/wine/inf/*.inf
+  for f in "${prefix}"/share/wine/inf/*.inf
   {
-    test -f "$f" || continue
-    "$WINE" 'C:\windows\system32\rundll32.exe' \
+    test -f "${f}" || continue
+    # note: wine does not import INF file which includes blank characters in path.
+    inftemp=`mktemp -u -t nihonshu`
+    ln -s "${f}" ${inftemp}
+    "${WINE}" 'C:\windows\system32\rundll32.exe' \
       setupapi,InstallHinfSection DefaultInstall 128 \
-      '\\?\'unix"$f"
+      '\\?\'unix${inftemp}
+    rm ${inftemp}
   }
 }
-
 check_timestamp
 
 exec "$WINE" "$@"
