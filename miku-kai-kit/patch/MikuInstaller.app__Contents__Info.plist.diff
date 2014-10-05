@@ -1,0 +1,29 @@
+diff --git a/MikuInstaller.app/Contents/Info.plist b/MikuInstaller.app/Contents/Info.plist
+index 09584a7..7425f79 100644
+--- a/MikuInstaller.app/Contents/Info.plist
++++ b/MikuInstaller.app/Contents/Info.plist
+@@ -40,7 +40,7 @@
+ 	<key>CFBundleExecutable</key>
+ 	<string>MikuInstaller</string>
+ 	<key>CFBundleGetInfoString</key>
+-	<string>MikuInstaller 20080803, Copyright (C) 2008 MikuInstaller project.</string>
++	<string>MikuInstaller-Kai @PROJECT_VERSION@, Copyright (C) 2008 MikuInstaller project.</string>
+ 	<key>CFBundleIconFile</key>
+ 	<string>AppIcon</string>
+ 	<key>CFBundleIdentifier</key>
+@@ -48,13 +48,13 @@
+ 	<key>CFBundleInfoDictionaryVersion</key>
+ 	<string>6.0</string>
+ 	<key>CFBundleName</key>
+-	<string>MikuInstaller</string>
++	<string>MikuInstaller-Kai</string>
+ 	<key>CFBundlePackageType</key>
+ 	<string>APPL</string>
+ 	<key>CFBundleSignature</key>
+ 	<string>????</string>
+ 	<key>CFBundleVersion</key>
+-	<string>20080803</string>
++	<string>@PROJECT_VERSION@</string>
+ 	<key>NSHumanReadableCopyright</key>
+ 	<string>Copyright (C) 2008 MikuInstaller project.</string>
+ 	<key>NSMainNibFile</key>

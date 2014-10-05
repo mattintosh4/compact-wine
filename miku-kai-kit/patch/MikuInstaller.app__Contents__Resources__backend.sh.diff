@@ -1,0 +1,103 @@
+diff --git a/MikuInstaller.app/Contents/Resources/backend.sh b/MikuInstaller.app/Contents/Resources/backend.sh
+index 9d85729..71ba0a7 100644
+--- a/MikuInstaller.app/Contents/Resources/backend.sh
++++ b/MikuInstaller.app/Contents/Resources/backend.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/ksh
+ #
+ # backend of MikuInstaller
+ #
+@@ -34,59 +34,61 @@
+ #   MIKUAPPDIR        -- $HOME/Applications/MikuInstaller
+ #
+ 
+-WINE="$MIKUBUNDLE/Contents/MacOS/wine"
+-cmd="$1"
+-shift
++set -e
++PATH=/usr/bin:/bin
+ 
+-echo "MIKUBUNDLE: $MIKUBUNDLE"
+-echo "WINEPREFIX: $WINEPREFIX"
+-echo "MIKUROOT: $MIKUROOT"
+-echo "MIKUAPPDIR: $MIKUAPPDIR"
+-echo "command: $cmd"
++MIKUBUNDLE=$(cd "$(dirname "$0")"/Wine.bundle && pwd)
++WINE=$MIKUBUNDLE/Contents/MacOS/wine
++cmd=$1
++shift
+ 
+-#sleep 2
+-#exit
++echo "\
++\$MIKUBUNDLE: $MIKUBUNDLE
++\$WINEPREFIX: $WINEPREFIX
++\$MIKUROOT: $MIKUROOT
++\$MIKUAPPDIR: $MIKUAPPDIR
++command: $cmd"
+ 
+ set -x
+-case "$cmd" in
++case $cmd in
+ 
+   install)
+-    WINEBUNDLE="$1"
+-    test -n "$WINEBUNDLE" || return 1
+-    test -d "$WINEBUNDLE" || return 1
+-    mkdir "$MIKUBUNDLE"
+-    (cd "$WINEBUNDLE" && pax -rw -v -H -pap Contents "$MIKUBUNDLE") \
+-     || return $?
+-    mkdir "$MIKUROOT/prefix" || :
++#    WINEBUNDLE=$1
++#    test -d "$WINEBUNDLE" || exit
++#    mkdir -p "$MIKUBUNDLE"
++#    (cd "$WINEBUNDLE" && pax -rw -v -H -pap Contents "$MIKUBUNDLE") || exit
++    mkdir -p "$MIKUROOT"/prefix
+     ;;
+ 
+   open)
+-    "$WINE" --miku=debug --miku=shellexec -c "$@"
++    "$WINE" --miku=debug start /unix "$@"
+     ;;
+ 
+   winecfg)
+-    "$WINE" --miku=debug --miku=winecmd winecfg
++    "$WINE" --miku=debug winecfg
+     ;;
+ 
+   addapp)
+-    set -e
+-    old=`find "$MIKUAPPDIR" -name "*.app" -prune -print 2>/dev/null || :`
+-    "$WINE" --miku=debug --miku=addapp -d"$MIKUAPPDIR"
+-    new=`find "$MIKUAPPDIR" -name "*.app" -prune -print 2>/dev/null || :`
+-    set +x
+-    [ "x$old" = "x$new" ] || open -a Finder "$MIKUAPPDIR"
++    osascript - <<\!
++tell app "System Events"
++  display alert "MikuInstaller-Kai ではアプリケーションバンドルの作成はサポートされていません" ¬
++    message "環境設定で \"Wine終了時にアプリケーションバンドルを自動作成する\" のチェックを外してください。" ¬
++    as critical
++end tell
++!
++    exit 0
+     ;;
+ 
+   prefixcreate)
+-    mkdir -p "$WINEPREFIX" || :
++    mkdir -p "$WINEPREFIX"
+     "$WINE" --miku=debug --miku=prefixcreate
+     ;;
+ 
+   prefixupdate)
+-    for i in "$MIKUROOT/prefix"/*; do
+-      [ -d "$i" ] || continue
+-      WINEPREFIX="$i" "$WINE" --miku=debug --miku=prefixcreate
+-      WINEPREFIX="$i" "$WINE" --miku=debug --miku=addapp -d"$MIKUAPPDIR"
++    for f in "$MIKUROOT"/prefix/*
++    do
++      test -d "$f" || continue
++      WINEPREFIX="$f" "$WINE" --miku=debug --miku=prefixcreate
+     done
+     ;;
+ 

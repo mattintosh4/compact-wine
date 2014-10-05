@@ -1,0 +1,107 @@
+diff --git a/MikuInstaller.app/Contents/Resources/Wine.bundle/Contents/Resources/script/startwine.sh b/MikuInstaller.app/Contents/Resources/Wine.bundle/Contents/Resources/script/startwine.sh
+index b85f1b4..ecaa2f8 100755
+--- a/MikuInstaller.app/Contents/Resources/Wine.bundle/Contents/Resources/script/startwine.sh
++++ b/MikuInstaller.app/Contents/Resources/Wine.bundle/Contents/Resources/script/startwine.sh
+@@ -1,11 +1,7 @@
+-#!/bin/sh
++#!/bin/ksh
+ #
+ # startwine.sh - start a wine command
+ #
+-# Wine requires that
+-# - X11 is already launched and $DISPLAY is appropriately set.
+-# - LD_LIBRARY_PATH includes a path to X11 libraries.
+-#
+ # Copyright (C) 2008 MikuInstaller Project. All rights reserved.
+ # http://mikuinstaller.sourceforge.jp/
+ #
+@@ -31,56 +27,37 @@
+ # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #
+ 
+-MIKUVERSION=20080803
+-
+ set -e
+-PATH=/usr/bin:/bin:/usr/sbin
+-
+-if [ -z "$MIKUBUNDLE" ]; then
+-  dir=`dirname "$0"`
+-  MIKUBUNDLE=`cd "$dir/../../.." && pwd`
+-fi
+-MIKURESOURCE="$MIKUBUNDLE/Contents/Resources"
+-MIKUFRAMEWORK="$MIKUBUNDLE/Contents/SharedFrameworks"
+-MIKUSUPPORT="$MIKUBUNDLE/Contents/SharedSupport"
+-
+-if [ -z "$DISPLAY" ]; then
+-  . "$MIKURESOURCE/script/startx11.sh"
+-fi
+-
+-# libfreetype.6.dylib is one of essential library for Wine.
+-if [ -f "/usr/X11/lib/libfreetype.6.dylib" ]; then
+-  X11DIR=/usr/X11
+-elif [ -f "/usr/X11R6/lib/libfreetype.6.dylib" ]; then
+-  X11DIR=/usr/X11R6
+-else
+-  echo "WARNING: libfreetype.6.dylib is not found in the standard place." 1>&2
+-  if [ -d "/usr/X11" ]; then
+-    X11DIR=/usr/X11
+-  else
+-    X11DIR=/usr/X11R6
+-  fi
+-fi
+-
+-if [ -n "$LD_LIBRARY_PATH" ]; then
+-  LD_LIBRARY_PATH="$LD_LIBRARY_PATH:"
+-fi
+-LD_LIBRARY_PATH="$LD_LIBRARY_PATH""$MIKURESOURCE/lib:$MIKUFRAMEWORK/lib:$X11DIR/lib"
+-export LD_LIBRARY_PATH
+-
+-#
+-# WORKAROUND: Wine doesn't work with Apple's X11 on Tiger due to
+-# something wrong of OpenGL support of Apple's X11.
+-# To avoid this problem, we force to disable OpenGL support of wine
+-# if X11 is XFree86.
+-#
+-if $X11DIR/bin/xdpyinfo 2>&1 | grep XFree86 > /dev/null 2>&1; then
+-  WINE_OPENGL_HACK=0
+-  export WINE_OPENGL_HACK
+-fi
+-
+-PATH="$MIKUSUPPORT/bin:$PATH"
+-
+-prog="$1"
+-shift
+-exec "$prog" "$@"
++PATH=/usr/bin:/bin
++
++MIKUVERSION=@PROJECT_VERSION@
++
++case $MIKUBUNDLE in
++'')
++  MIKUBUNDLE=$(cd "$(dirname "$0")"/../../.. && pwd)
++  ;;
++esac
++PATH=$MIKUBUNDLE/Contents/SharedSupport/bin:$PATH
++
++case $MIKUROOT in
++?*)
++  XDG_CACHE_HOME=$MIKUROOT; export XDG_CACHE_HOME
++  ;;
++esac
++
++case $WINEPREFIX in
++?*)
++  XDG_CONFIG_HOME=$WINEPREFIX; export XDG_CONFIG_HOME
++  XDG_DATA_HOME=$WINEPREFIX; export XDG_DATA_HOME
++;;
++esac
++
++case ${WINEDEBUG+set} in
++set)
++  ;;
++*)
++  WINEDEBUG=fixme-all; export WINEDEBUG
++  ;;
++esac
++
++exec "$@"

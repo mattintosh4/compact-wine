@@ -1,0 +1,74 @@
+#!/bin/sh -e
+
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+miku_dmg=${1}
+absdir=$(cd "$(dirname "$0")" && pwd)
+
+test -d "${absdir}"/patch
+"${absdir}"/wine/bin/wine --version
+
+>&2 printf '%s' "ディスクイメージの MD5 を確認しています..."
+miku_dmg_md5=`md5 -q "${miku_dmg}"`
+case ${miku_dmg_md5} in
+36b33041fea516faccddc18413ea23cc)
+  ;;
+*)
+  >&2 printf '%s\n' "警告：不正なディスクイメージです"
+  exit 1
+  ;;
+esac
+>&2 printf '%s\n' "完了"
+
+>&2 printf '%s' "ディスクイメージをマウントしています..."
+mountpoint=`mktemp -d -t $$`
+hdiutil attach "${miku_dmg}" -mountpoint ${mountpoint}
+
+>&2 printf '%s' "ディスクイメージからデータをコピーしています..."
+tempdir=`mktemp -d -t $$`
+rsync -am --filter='. -' ${mountpoint}/MikuInstaller.app ${tempdir} <<!
++ SharedSupport/README_UmeFont.html
++ SharedSupport/share/
++ SharedSupport/share/wine/
++ SharedSupport/share/wine/fonts/
++ SharedSupport/share/wine/fonts/ume-*.ttf
+- SharedSupport/**
+- SharedFrameworks/
+- addapp.sh
+- createapp.sh
+- infoplist.awk
+- startx11.sh
+- shellexec.exe.so
+- startmenu.exe.so
+!
+>&2 printf '%s\n' "完了"
+hdiutil detach ${mountpoint}
+rm -r ${mountpoint}
+
+Wine_bundle=${tempdir}/MikuInstaller.app/Contents/Resources/Wine.bundle
+>&2 printf '%s' "Wine.bundle を更新しています..."
+rsync -amR ${absdir}/wine/./ ${Wine_bundle}/Contents/SharedSupport/./
+for f in "${absdir}"/patch/*
+do
+  test -f "${f}" || continue
+  patch -s -Np1 -d ${tempdir} <"${f}"
+done
+mv ${Wine_bundle}/Contents/Resources/inf/MikuInstaller.inf{,.bak}
+ln ${Wine_bundle}/Contents/{SharedSupport/share/wine,Resources}/inf/osx-wine.inf
+mv ${tempdir}/MikuInstaller{,-Kai}.app
+touch ${tempdir}/MikuInstaller-Kai.app
+>&2 printf '%s\n' "完了"
+
+>&2 printf '%s\n' "新しいディスクイメージを作成しています..."
+destdir=`mktemp -d -t $$`
+hdiutil create \
+  -ov \
+  -srcdir ${tempdir} \
+  -volname MikuInstaller-Kai-@PROJECT_VERSION@ \
+  ${destdir}/MikuInstaller-Kai-@PROJECT_VERSION@.dmg
+
+>&2 printf '%s' "作業ディレクトリのクリーンアップ中..."
+rm -r ${tempdir}
+>&2 printf '%s\n' "完了"
+
+>&2 printf '%s\n' "MikuInstaller-Kai の作成が完了しました ターミナルを終了してください"
+open ${destdir}

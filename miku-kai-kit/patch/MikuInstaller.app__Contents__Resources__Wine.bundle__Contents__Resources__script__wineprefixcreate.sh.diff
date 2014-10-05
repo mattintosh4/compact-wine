@@ -1,0 +1,89 @@
+diff --git a/MikuInstaller.app/Contents/Resources/Wine.bundle/Contents/Resources/script/wineprefixcreate.sh b/MikuInstaller.app/Contents/Resources/Wine.bundle/Contents/Resources/script/wineprefixcreate.sh
+index 041242e..c76e770 100755
+--- a/MikuInstaller.app/Contents/Resources/Wine.bundle/Contents/Resources/script/wineprefixcreate.sh
++++ b/MikuInstaller.app/Contents/Resources/Wine.bundle/Contents/Resources/script/wineprefixcreate.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/ksh
+ #
+ # wineprefixcreate.sh - update a wineprefix
+ #
+@@ -27,43 +27,44 @@
+ # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #
+ 
+-MIKUVERSION=20080803
+-
+ set -e
+-PATH=/usr/bin:/bin:/usr/sbin
++PATH=/usr/bin:/bin
+ 
+-if [ -z "$MIKUBUNDLE" ]; then
+-  dir=`dirname "$0"`
+-  MIKUBUNDLE=`cd "$dir/../../.." && pwd`
+-fi
+-MIKURESOURCE="$MIKUBUNDLE/Contents/Resources"
++MIKUVERSION=@PROJECT_VERSION@
+ 
+-if [ -n "$WINEPREFIX" ]; then
+-  timestamp="$WINEPREFIX/.miku-timestamp"
+-else
+-  timestamp="$HOME/.wine/.miku-timestamp"
+-fi
+-updated=no
++case $MIKUBUNDLE in
++'')
++  MIKUBUNDLE=$(cd "$(dirname "$0")"/../../.. && pwd)
++  ;;
++esac
++MIKURESOURCE=$MIKUBUNDLE/Contents/Resources
+ 
+-for i in "$MIKURESOURCE/inf/"*.inf; do
+-  if [ "$i" -nt "$timestamp" ]; then
+-    updated=yes
+-    # InstallHinfSection requires UNQUOTED filename but wine does quote
+-    # a command line argument if it includes spaces.
+-    # To prevent the quotation, make a temporary file, whose path doesn't
+-    # include any spaces, copy inf file to the file, and then run
+-    # InstallHinfSection.
+-    tmp=`mktemp -t tmp`
+-    cp "$i" "$tmp"
+-    (
+-      trap "rm $tmp" EXIT
+-      set -- wine rundll32 setupapi,InstallHinfSection \
+-             DefaultInstall 128 '\\?\unix'"$tmp"
+-      . "$MIKURESOURCE/script/startwine.sh"
+-    ) || exit $?
+-  fi
++case $WINEPREFIX in
++'')
++  timestamp=$HOME/.wine/.miku-timestamp
++  ;;
++*)
++  timestamp=$WINEPREFIX/.miku-timestamp
++  ;;
++esac
++
++updated=no
++for f in "$MIKURESOURCE"/inf/*.inf
++do
++  test "$f" -nt "$timestamp" || continue
++  updated=yes
++  tempfile=`mktemp -u -t $$`
++  ln -sf "$f" $tempfile
++  (
++    . "$MIKURESOURCE"/script/startwine.sh \
++      wine rundll32 setupapi,InstallHinfSection \
++      DefaultInstall 128 '\\?\'unix$tempfile
++  ) || exit
++  rm $tempfile
+ done
+ 
+-if [ "x$updated" = "xyes" ]; then
+-  date '+%s' > "$timestamp" || :
+-fi
++case $updated in
++yes)
++  date +%s >"$timestamp"
++  ;;
++esac

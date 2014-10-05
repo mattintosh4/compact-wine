@@ -4,6 +4,8 @@ set -o pipefail
 set -u
 set -x
 
+PROJECT_VERSION=`date +%Y%m%d`
+
 MACOSX_DEPLOYMENT_TARGET=`sw_vers -productVersion \
     | cut -d. -f-2`
 SDKROOT=`xcodebuild -version -sdk macosx${MACOSX_DEPLOYMENT_TARGET} \
@@ -41,41 +43,44 @@ define XDIR             /opt/X11
 define XINCDIR          ${XDIR}/include
 define XLIBDIR          ${XDIR}/lib
 
-PATH=
-PATH+=:$__TOOLPREFIX__CCACHE__
-PATH+=:$__TOOLPREFIX__GIT__
-PATH+=:$__TOOLPREFIX__GETTEXT__
-PATH+=:$__TOOLPREFIX__AUTOTOOLS__
-PATH+=:$__TOOLPREFIX__XZ__
-PATH+=:$__CS_PATH__
-PATH=${PATH#?}
+PATH=\
+$__TOOLPREFIX__CCACHE__:\
+$__TOOLPREFIX__GIT__:\
+$__TOOLPREFIX__GETTEXT__:\
+$__TOOLPREFIX__AUTOTOOLS__:\
+$__TOOLPREFIX__XZ__:\
+`xcode-select -print-path`/usr/bin:\
+$__CS_PATH__
 
 set -a
-CCACHE_PATH=
-CCACHE_PATH+=:/usr/bin
-CCACHE_PATH+=:$__MACPORTSPREFIX__/bin
-CCACHE_PATH=${CCACHE_PATH#?}
+CCACHE_PATH=\
+`xcode-select -print-path`/usr/bin:\
+/usr/bin:\
+$__MACPORTSPREFIX__/bin
 
-CC=gcc-apple-4.2
-CXX=g++-apple-4.2
-CFLAGS="-m32 -arch i386 -O3 -march=core2 -mtune=core2"
+#CC=gcc-apple-4.2
+#CXX=g++-apple-4.2
+MACOSX_DEPLOYMENT_TARGET=10.6
+SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
+CC=gcc
+CXX=g++
+CFLAGS="-m32 -arch i386 -O3 -march=core2 -mtune=core2 -mmacosx-version-min=10.6 -isysroot $SDKROOT -I${INCDIR}"
 CXXFLAGS=${CFLAGS}
-CPPFLAGS=
-CPPFLAGS+=" -isysroot $SDKROOT"
-CPPFLAGS+=" -I$INCDIR"
-LDFLAGS=" -arch i386"
-LDFLAGS+=" -Wl,-headerpad_max_install_names"
-LDFLAGS+=" -Wl,-syslibroot,$SDKROOT"
-LDFLAGS+=" -Z -L$LIBDIR -L/usr/lib -F/System/Library/Frameworks"
+LDFLAGS="\
+$CFLAGS \
+-Wl,-arch,i386 \
+-Wl,-macosx_version_min,10.6 \
+-Wl,-headerpad_max_install_names \
+-Wl,-syslibroot,$SDKROOT \
+-Z -L$LIBDIR -L/usr/lib -F/System/Library/Frameworks"
 
 INSTALL_NAME_TOOL=$__MACPORTSPREFIX__/bin/install_name_tool
 
 PKG_CONFIG=$__MACPORTSPREFIX__/bin/pkg-config
 PKG_CONFIG_PATH=
-PKG_CONFIG_LIBDIR=
-PKG_CONFIG_LIBDIR+=:${LIBDIR}/pkgconfig
-PKG_CONFIG_LIBDIR+=:/usr/lib/pkgconfig
-PKG_CONFIG_LIBDIR=${PKG_CONFIG_LIBDIR#?}
+PKG_CONFIG_LIBDIR=\
+${LIBDIR}/pkgconfig:\
+/usr/lib/pkgconfig
 set +a
 
 #-------------------------------------------------------------------------------
@@ -113,10 +118,11 @@ build_zlib()
 build_freetype()
 {
     clone_repos freetype
-    git_checkout remotes/origin/master
+    git_checkout VER-2-5-3
     ./autogen.sh
     args=(
         --prefix=$PREFIX
+        --build=$__TRIPLE__
         --libdir=$LIBDIR
         --disable-static
     )
@@ -131,6 +137,7 @@ build_xz()
     ./autogen.sh
     args=(
         --prefix=$PREFIX
+        --build=$__TRIPLE__
         --libdir=$LIBDIR
         --disable-dependency-tracking
         --disable-nls
@@ -171,12 +178,12 @@ build_libtiff()
     git_checkout master
     args=(
         --prefix=$PREFIX
+        --build=$__TRIPLE__
         --libdir=$LIBDIR
         --disable-dependency-tracking
         --disable-cxx
         --disable-jbig
         --disable-static
-        --with-apple-opengl-framework
         --with-x
         --x-inc=${XINCDIR}
         --x-lib=${XLIBDIR}
@@ -192,6 +199,7 @@ build_lcms()
     git_checkout remotes/origin/master
     args=(
         --prefix=$PREFIX
+        --build=$__TRIPLE__
         --libdir=$LIBDIR
         --disable-dependency-tracking
         --disable-static
@@ -204,10 +212,11 @@ build_lcms()
 build_libpng()
 {
     clone_repos libpng
-    git_checkout remotes/origin/libpng16
+    git_checkout remotes/origin/libpng15
     ./autogen.sh
     args=(
         --prefix=$PREFIX
+        --build=$__TRIPLE__
         --libdir=$LIBDIR
         --disable-dependency-tracking
         --disable-static
@@ -220,8 +229,9 @@ build_libpng()
 build_wine()
 {
     clone_repos wine
-#    git_checkout remotes/origin/master
-    git_checkout wine-1.7.23
+    latest_version=`git tag --sort=v:refname --contain 5b1e70ce97454c8b22ec3d55d2543968eef4cb2d | tail -n 1`
+    git_checkout ${latest_version}
+
     ## This variable is needed patching.
     args=(
         --prefix=${W_PREFIX}
@@ -354,7 +364,8 @@ make_distfile()
     }
     set -x
 
-    rm -rf $LIBDIR/*.la
+    rm -f  $LIBDIR/*.a
+    rm -f  $LIBDIR/*.la
     rm -rf $LIBDIR/pkgconfig
 
 #    mkdir -p          $W_PREFIX/libexec
@@ -371,15 +382,14 @@ make_distfile()
     # DOC
     install -m 0644 ${TMPDIR}/wine/LICENSE ${W_DATADIR}/wine
     install -d                             ${W_DATADIR}/nihonshu
-    install -m 0644 ${PROJECTROOT}/LICENSE ${W_DATADIR}/nihonshu
+    install -m 0644 ${PROJECTROOT}/LICENSE ${W_DATADIR}/nihonshu/LICENSE
+    echo ${PROJECT_VERSION}               >${W_DATADIR}/nihonshu/VERSION
 
-    set -- \
-        `cut -d' ' -f3 ${TMPDIR}/wine/VERSION` \
-        `sw_vers -productVersion | cut -d. -f-2` \
-        `date +%Y%m%d`
-    tar cjf ${PROJECTROOT}/distfiles/wine-${1}_nihonshu_osx${2}_${3}.tar.bz2 -C ${INSTALL_PREFIX%/*} wine
+    WINE_VERSION=`${W_BINDIR}/wine --version`
+    DISTFILE=${PROJECTROOT}/distfiles/${WINE_VERSION}_nihonshu-${PROJECT_VERSION}.tar.bz2
 
-    WINE_VERSION=`cat VERSION`
+    tar cjf ${DISTFILE} -C ${INSTALL_PREFIX%/*} wine
+
     sed "/@PROJECTROOT@/s||${PROJECTROOT}|g
          /@WINE_VERSION@/s||${WINE_VERSION}|g
     " ${PROJECTROOT}/patch_autogen.sh.in | sh -s
@@ -392,6 +402,8 @@ make_distfile()
 }
 
 mkdir -p ${TMPDIR}
+
+env | sort
 
 select n in \
 wine-all \
@@ -406,8 +418,8 @@ do
 case ${n:-REPLY} in
 wine-all)
     init
-    build_zlib
-    build_xz
+#    build_zlib
+#    build_xz
     build_libpng
     build_freetype
     build_libjpeg

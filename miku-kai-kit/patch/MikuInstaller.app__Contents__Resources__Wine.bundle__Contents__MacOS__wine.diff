@@ -1,0 +1,104 @@
+diff --git a/MikuInstaller.app/Contents/Resources/Wine.bundle/Contents/MacOS/wine b/MikuInstaller.app/Contents/Resources/Wine.bundle/Contents/MacOS/wine
+index 1f499b5..ec38ecc 100755
+--- a/MikuInstaller.app/Contents/Resources/Wine.bundle/Contents/MacOS/wine
++++ b/MikuInstaller.app/Contents/Resources/Wine.bundle/Contents/MacOS/wine
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/ksh
+ #
+ # start.sh - Toplevel application starter
+ #
+@@ -27,31 +27,41 @@
+ # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #
+ 
+-MIKUVERSION=20080803
+-
+ set -e
+-PATH=/usr/bin:/bin:/usr/sbin
++PATH=/usr/bin:/bin
++
++MIKUVERSION=@PROJECT_VERSION@
+ 
+-if [ -z "$MIKUBUNDLE" ]; then
+-  dir=`dirname "$0"`
+-  MIKUBUNDLE=`cd "$dir/../.." && pwd`
+-fi
++case $MIKUBUNDLE in
++'')
++  MIKUBUNDLE=$(cd "$(dirname "$0")"/../.. && pwd)
++  ;;
++esac
+ MIKURESOURCE="$MIKUBUNDLE/Contents/Resources"
+ 
+-if [ -z "$LANG" ]; then
+-  LANG=ja_JP.UTF-8
+-  export LANG
+-fi
++case $LANG in
++'')
++  LANG=ja_JP.UTF-8; export LANG
++  ;;
++esac
+ 
+-if [ "x$1" = "x--miku=debug" ]; then
++case $1 in
++--miku=debug)
+   shift
+   set -x
+-fi
++  ;;
++esac
+ 
+ # MikuInstaller extensions
+ mikucmd=
+-mikucmd=`expr "x$1" : "x--miku=\(.*\)"` && shift
+-case "$mikucmd" in
++case $1 in
++--miku=*)
++  mikucmd=${1/--miku=/}
++  shift
++  ;;
++esac
++
++case $mikucmd in
+   version)            # print version of MikuInstaller
+     echo "$MIKUVERSION"
+     exit
+@@ -62,18 +72,17 @@ case "$mikucmd" in
+     exit $?
+     ;;
+   addapp)             # add application bundles from start menu or exe file
+-    . "$MIKURESOURCE/script/addapp.sh"
+     exit
+     ;;
+   prefixcreate)       # create WINEPREFIX
+-    . "$MIKURESOURCE/script/wineprefixcreate.sh"
++    . "$MIKURESOURCE"/script/wineprefixcreate.sh
+     exit
+     ;;
+   winecmd)            # invoke a wine/bin command
+     # pass through to startwine.sh
+     ;;
+   shellexec)          # open a file by ShellExecEx.
+-    set -- wine "$MIKURESOURCE/lib/shellexec.exe.so" "$@"
++    set -- wine "$@"
+     ;;
+   '')                 # no extension specified; wine compatible mode
+     set -- wine "$@"
+@@ -84,13 +93,6 @@ case "$mikucmd" in
+     ;;
+ esac
+ 
+-. "$MIKURESOURCE/script/startx11.sh"
+-. "$MIKURESOURCE/script/wineprefixcreate.sh"
+-
+-osascript <<END || :
+-with timeout 3 seconds
+-  tell application "X11" to activate
+-end timeout
+-END
++. "$MIKURESOURCE"/script/wineprefixcreate.sh
+ 
+-. "$MIKURESOURCE/script/startwine.sh"
++. "$MIKURESOURCE"/script/startwine.sh
