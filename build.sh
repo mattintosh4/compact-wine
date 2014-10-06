@@ -61,7 +61,7 @@ $__MACPORTSPREFIX__/bin
 #CC=gcc-apple-4.2
 #CXX=g++-apple-4.2
 MACOSX_DEPLOYMENT_TARGET=10.6
-SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
+SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk
 CC=gcc
 CXX=g++
 CFLAGS="-m32 -arch i386 -O3 -march=core2 -mtune=core2 -mmacosx-version-min=10.6 -isysroot $SDKROOT -I${INCDIR}"
@@ -268,6 +268,18 @@ build_wine()
     ./configure "${args[@]}"
     make -j3
     make install
+
+    # Generate original behavior module
+    git checkout dlls/winemac.drv/cocoa_window.m
+    make dlls/winemac.drv
+    mv ${LIBDIR}/wine/winemac.drv.so \
+       ${LIBDIR}/wine/winemac_autohide.drv.so
+    install -m 0755 \
+      dlls/winemac.drv/winemac.drv.so \
+      ${LIBDIR}/wine/winemac_nohide.drv.so
+    ln -s \
+      winemac_autohide.drv.so \
+      ${LIBDIR}/wine/winemac.drv.so
 }
 
 #-------------------------------------------------------------------------------
