@@ -11,7 +11,7 @@ test ! -e ${app} || rm -r ${app}
 
 osacompile -o ${app} <<\!
 on main(argv)
-  set beginning of argv to quoted form of POSIX path of (path to resource "wine/bin/nihonshu")
+  set beginning of argv to quoted form of POSIX path of (path to me) & "Contents/Resources/wine/bin/nihonshu"
   set beginning of argv to "WINEPREFIX=$HOME/Library/Caches/Wine/prefixes/default"
   set beginning of argv to "WINEDEBUG=-all"
 --set end       of argv to "&>/dev/null &"
