@@ -48,7 +48,7 @@ case ${XDG_CACHE_HOME+set} in
   ;;
 esac
 
-case ${XDG_CONFIG_FILE+set} in
+case ${XDG_CONFIG_HOME+set} in
 '')
   XDG_CONFIG_HOME=${WINEPREFIX}; export XDG_CONFIG_HOME
   >&2 echo "XDG_CONFIG_HOME: ${XDG_CONFIG_HOME}"
@@ -66,25 +66,29 @@ esac
 
 check_timestamp()
 {
+  mkdir -p "${WINEPREFIX}"
+
   read timestamp_ctime 2>/dev/null <"${WINEPREFIX}"/.update-timestamp || :
   case ${timestamp_ctime:+set} in
   set)
     ((`stat -f inf_ctime=%c -t %s "${prefix}"/share/wine/wine.inf`))
     ((${timestamp_ctime} < ${inf_ctime})) || return 0
+    ;;
   esac
 
   for f in "${prefix}"/share/wine/inf/*.inf
-  {
+  do
     test -f "${f}" || continue
-    # note: wine does not import INF file which includes blank characters in path.
+    # note: wine does not import INF which includes blank characters in path.
     inftemp=`mktemp -u -t nihonshu`
     ln -s "${f}" ${inftemp}
     "${WINE}" 'C:\windows\system32\rundll32.exe' \
       setupapi,InstallHinfSection DefaultInstall 128 \
       '\\?\'unix${inftemp}
     rm ${inftemp}
-  }
+  done
+}
 }
 check_timestamp
 
-exec "$WINE" "$@"
+exec "${WINE}" "${@}"
