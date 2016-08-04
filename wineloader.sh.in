@@ -88,7 +88,8 @@ check_timestamp()
     rm ${inftemp}
   done
 }
-}
 check_timestamp
+
+
 
 exec "${WINE}" "${@}"
