@@ -44,6 +44,7 @@ define XINCDIR          ${XDIR}/include
 define XLIBDIR          ${XDIR}/lib
 
 PATH=\
+/tmp/local/bin:\
 $__TOOLPREFIX__CCACHE__:\
 $__TOOLPREFIX__GIT__:\
 $__TOOLPREFIX__GETTEXT__:\
@@ -52,27 +53,37 @@ $__TOOLPREFIX__XZ__:\
 `xcode-select -print-path`/usr/bin:\
 $__CS_PATH__
 
+
 set -a
 CCACHE_PATH=\
+/tmp/_build/bin:\
 `xcode-select -print-path`/usr/bin:\
 /usr/bin:\
 $__MACPORTSPREFIX__/bin
 
-#CC=gcc-apple-4.2
+# CC=gcc-apple-4.2
 #CXX=g++-apple-4.2
+# CC=gcc
+#CXX=g++
+ CC="clang"
+CXX="clang++"
 MACOSX_DEPLOYMENT_TARGET=10.6
-SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk
-CC=gcc
-CXX=g++
-CFLAGS="-m32 -arch i386 -O3 -march=core2 -mtune=core2 -mmacosx-version-min=10.6 -isysroot $SDKROOT -I${INCDIR}"
+SDKROOT=`xcodebuild -version -sdk macosx10.9 | awk '/^Path/ { print $2 }'`
+  CFLAGS="-m32 -arch i386 -O3 -mtune=generic -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET} -isysroot ${SDKROOT} -I${INCDIR}"
 CXXFLAGS=${CFLAGS}
+case ${CC} in
+clang*)
+      CFLAGS="${CFLAGS} -std=gnu89 -g"
+    CXXFLAGS="${CFLAGS}"
+;;
+esac
 LDFLAGS="\
-$CFLAGS \
+${CFLAGS} \
 -Wl,-arch,i386 \
--Wl,-macosx_version_min,10.6 \
+-Wl,-macosx_version_min,${MACOSX_DEPLOYMENT_TARGET} \
 -Wl,-headerpad_max_install_names \
--Wl,-syslibroot,$SDKROOT \
--Z -L$LIBDIR -L/usr/lib -F/System/Library/Frameworks"
+-Wl,-syslibroot,${SDKROOT} \
+-Z -L${LIBDIR} -L/usr/lib -F/System/Library/Frameworks"
 
 INSTALL_NAME_TOOL=$__MACPORTSPREFIX__/bin/install_name_tool
 
@@ -81,6 +92,10 @@ PKG_CONFIG_PATH=
 PKG_CONFIG_LIBDIR=\
 ${LIBDIR}/pkgconfig:\
 /usr/lib/pkgconfig
+
+NASM=${__MACPORTSPREFIX__}/bin/nasm
+
+ac_tool_prefix=/opt/local/bin
 set +a
 
 #-------------------------------------------------------------------------------
@@ -100,7 +115,6 @@ clone_repos()
 }
 
 #-------------------------------------------------------------------------------
-
 build_zlib()
 {
     clone_repos zlib
@@ -118,7 +132,7 @@ build_zlib()
 build_freetype()
 {
     clone_repos freetype
-    git_checkout VER-2-5-3
+    git_checkout VER-2-6-5
     ./autogen.sh
     args=(
         --prefix=$PREFIX
@@ -157,12 +171,13 @@ build_xz()
 build_libjpeg()
 {
     clone_repos libjpeg-turbo
-    git_checkout remotes/1.3.x
-    autoreconf -vi
+    git_checkout 1.5.0
+    autoreconf -fvi
     args=(
         --prefix=$PREFIX
         --libdir=$LIBDIR
-        --build=$__TRIPLE__
+        --build=${__TRIPLE__}
+        --host=${__TRIPLE__}
         --disable-dependency-tracking
         --disable-static
         --with-jpeg8
@@ -235,8 +250,6 @@ build_wine()
     ## This variable is needed patching.
     args=(
         --prefix=${W_PREFIX}
-        --build=$__TRIPLE__
-        --disable-win16
         --with-cms
         --with-coreaudio
         --with-cups
@@ -312,6 +325,15 @@ init()
     mkdir -p ${BINDIR}
     mkdir -p ${INCDIR}
     mkdir -p ${LIBDIR}
+
+    mkdir -p                     ${PREFIX}/bin
+    ln -fs /opt/local/bin/ccache ${PREFIX}/bin
+    ln -fs ccache                ${PREFIX}/bin/clang
+    ln -fs ccache                ${PREFIX}/bin/clang++
+    ln -fs ccache                ${PREFIX}/bin/gcc
+    ln -fs ccache                ${PREFIX}/bin/g++
+    ln -fs ccache                ${PREFIX}/bin/cc
+    ln -fs ccache                ${PREFIX}/bin/c++
 }
 
 make_distfile()
@@ -397,6 +419,11 @@ make_distfile()
     install -m 0644 ${PROJECTROOT}/LICENSE ${W_DATADIR}/nihonshu/LICENSE
     echo ${PROJECT_VERSION}               >${W_DATADIR}/nihonshu/VERSION
 
+    # WINETRICKS
+    install -m 0755 ${SRCROOT}/winetricks/src/winetricks  ${W_BINDIR}/winetricks
+    install -d                                           ${W_DATADIR}/winetricks
+    install -m 0644 ${SRCROOT}/winetricks/COPYING        ${W_DATADIR}/winetricks/COPYING
+
     WINE_VERSION=`${W_BINDIR}/wine --version`
     DISTFILE=${PROJECTROOT}/distfiles/${WINE_VERSION}_nihonshu-${PROJECT_VERSION}.tar.bz2
 
@@ -425,7 +452,8 @@ libpng \
 freetype \
 libjpeg \
 libtiff \
-lcms
+lcms \
+distfile
 do
 case ${n:-REPLY} in
 wine-all)
@@ -457,6 +485,10 @@ libtiff)
     ;;
 lcms)
     build_lcms
+    ;;
+distfile)
+    build_wine
+    make_distfile
     ;;
 '')
     continue
