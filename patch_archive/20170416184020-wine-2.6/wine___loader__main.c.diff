@@ -1,0 +1,16 @@
+diff --git a/loader/main.c b/loader/main.c
+index 05e0c068a2..d647c5808b 100644
+--- a/loader/main.c
++++ b/loader/main.c
+@@ -87,6 +87,11 @@ static inline void reserve_area( void *addr, size_t size )
+ static void check_command_line( int argc, char *argv[] )
+ {
+     static const char usage[] =
++        "Wine version 2.6  Nihonshu binary edition (2017-04-16)\n"
++        "  Build: Darwin Kernel Version 13.4.0: Mon Jan 11 18:17:34 PST 2016; root:xnu-2422.115.15~1/RELEASE_X86_64\n"
++        "  Target: i686-apple-darwin13.4.0\n"
++        "  Configured with: --prefix=/usr/local/wine --with-cms --with-coreaudio --with-cups --with-curses --with-freetype --with-jpeg --with-openal --with-opencl --with-opengl --with-png --with-pthread --with-tiff --with-xml --with-xslt --with-zlib --with-x --x-inc=/opt/X11/include --x-lib=/opt/X11/lib --without-capi --without-gphoto --without-gsm --without-oss --without-sane --without-v4l\n"
++        "\n"
+         "Usage: wine PROGRAM [ARGUMENTS...]   Run the specified program\n"
+         "       wine --help                   Display this help and exit\n"
+         "       wine --version                Output version information and exit";

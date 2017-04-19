@@ -1,0 +1,14 @@
+diff --git a/dlls/winemac.drv/cocoa_window.m b/dlls/winemac.drv/cocoa_window.m
+index af8ebe7cfb..e7a8dd0cfe 100644
+--- a/dlls/winemac.drv/cocoa_window.m
++++ b/dlls/winemac.drv/cocoa_window.m
+@@ -1460,6 +1460,9 @@ - (void) orderBelow:(WineWindow*)prev orAbove:(WineWindow*)next activate:(BOOL)a
+                 [NSApp unhide:nil];
+             wasVisible = [self isVisible];
+ 
++            [NSApp setPresentationOptions:NSApplicationPresentationAutoHideDock|
++                                          NSApplicationPresentationAutoHideMenuBar];
++
+             if (activate)
+                 [NSApp activateIgnoringOtherApps:YES];
+ 
