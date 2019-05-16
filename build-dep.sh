@@ -141,7 +141,7 @@ build_ncurses()(
     name=ncurses
     rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}
     cd ${builddir}/${name}
-    git checkout -f master
+    git checkout master
     args=(
         --prefix=${prefix}
         --enable-widec
@@ -164,7 +164,7 @@ build_zlib()(
     name=zlib
     rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}/
     cd ${builddir}/${name}
-    git checkout -f master
+    git checkout master
     args=(
         --prefix=${prefix}
         --libdir=${libdir}
@@ -180,7 +180,7 @@ build_libpng()(
     name=libpng
     rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}
     cd ${builddir}/${name}
-    git checkout -f master
+    git checkout master
     args=(
         --prefix=${prefix}
         --libdir=${libdir}
@@ -198,7 +198,7 @@ build_freetype()(
     name=freetype
     rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}/
     cd ${builddir}/${name}
-    git checkout -f master
+    git checkout master
     ./autogen.sh
     /usr/bin/sed -E -i '' 's|.*(AUX_MODULES.*valid)|\1|' modules.cfg
     /usr/bin/sed -E -i '' '
@@ -224,7 +224,7 @@ build_harfbuzz()(
     name=harfbuzz
     rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}/
     cd ${builddir}/${name}
-    git checkout -f master
+    git checkout master
     NOCONFIGURE=1 ./autogen.sh
     args=(
         --prefix=${prefix}
@@ -242,7 +242,7 @@ build_libjpeg()(
     name=libjpeg-turbo
     rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}
     cd ${builddir}/${name}
-    git checkout -f master
+    git checkout master
     cmake -DCMAKE_INSTALL_PREFIX=${prefix} \
         -DWITH_JPEG8=1 \
         -DWITH_SIMD=0 \
@@ -261,7 +261,7 @@ build_libtiff()(
     name=libtiff
     rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}
     cd ${builddir}/${name}
-    git checkout -f master
+    git checkout master
     ./autogen.sh
     args=(
         --prefix=${prefix}
@@ -283,7 +283,7 @@ build_lcms()(
     name=Little-CMS
     rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}
     cd ${builddir}/${name}
-    git checkout -f master
+    git checkout master
     args=(
         --prefix=${prefix}
         --libdir=${libdir}
