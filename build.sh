@@ -3,6 +3,7 @@
  set -u
  set -x
 
+project_version=$(date +%Y%m%d)
 prjdir=$(cd "$(dirname "${0}")" && pwd)
 srcdir="${prjdir}"/src
 dstroot=/tmp/local
@@ -109,8 +110,8 @@ build_wine()
         --with-freetype
         --with-png
         --with-x
-        --x-includes=/opt/X11/include
-        --x-libraries=/opt/X11/lib
+        --x-inc=/opt/X11/include
+        --x-lib=/opt/X11/lib
     )
 
     ## 64-bit (first)
@@ -118,8 +119,8 @@ build_wine()
     || rm -rf ${builddir}/${name}/m64
     mkdir -p  ${builddir}/${name}/m64
     cd        ${builddir}/${name}/m64
-    ../configure "${args[@]}" --enable-win64
-    make dlldir=${libdir}
+    ../configure "${args[@]}" --enable-win64 --libdir=${libdir}
+    make dlldir=${libdir}/wine64
 
     ## 32-bit
     test ! -d ${builddir}/${name}/m32 \
@@ -132,7 +133,7 @@ build_wine()
 
     ## 64-bit (second)
     cd        ${builddir}/${name}/m64
-    make install dlldir=${libdir}
+    make install dlldir=${libdir}/wine64
 
     ## UNIVERSAL
     lipo -create \
@@ -154,7 +155,7 @@ patch_wine()
 
 change_install_name()
 (
-    is_external_lib?()
+    is_external_lib()
     (
         case ${1} in
         /Library/*      |\
@@ -181,8 +182,12 @@ change_install_name()
         set -- $(otool -D "${obj}")
         IFS=${save_IFS}
         shift || return 0 # truncate otool header
-        is_external_lib? "${1}" || return 0
-        install_name_tool -id @rpath/"${1##*/}" "${obj}"
+        is_external_lib "${1}" || return 0
+        (
+            echo
+            set -x
+            install_name_tool -id @rpath/"${1##*/}" "${obj}"
+        )
     )
 
     change_link()
@@ -191,14 +196,20 @@ change_install_name()
         set -- $(otool -L "${obj}" | grep -v "$(otool -D "${obj}")" | awk '{ print $1 }')
         for f
         do
-            is_external_lib? "${f}" || continue
-            install_name_tool -change "${f}" @rpath/"${f##*/}" "${obj}"
+            is_external_lib "${f}" || continue
+            (
+                echo
+                set -x
+                install_name_tool -change "${f}" @rpath/"${f##*/}" "${obj}"
+            )
         done; unset f
     )
 
     set -- $(find -H ${libdir} -type f \( -name "*.dylib" -o -name "*.so" \))
+    set +x
     for f
     do
+        printf '.'
         case ${f} in
         *.dylib)
             change_id "${f}"
@@ -206,6 +217,7 @@ change_install_name()
         esac
         change_link "${f}"
     done; unset f
+    set -x
 )
 
 make_distfile()
@@ -243,11 +255,11 @@ make_distfile()
         --exclude './lib/pkgconfig' \
         --exclude './libexec' \
         . \
-    | bzip >"${distfile}"
+    | bzip2 >"${distfile}"
 
 )
 
- init
- build_wine
+#init
+#build_wine
  change_install_name
  make_distfile
