@@ -3,9 +3,9 @@
  set -u
  set -x
 
-project_version=$(date +%Y%m%d)
-prjdir=$(cd "$(dirname "${0}")" && pwd)
-srcdir="${prjdir}"/src
+proj_version=$(date +%Y%m%d)
+proj_root=$(cd "$(dirname "${0}")" && pwd)
+srcdir="${proj_root}"/src
 dstroot=/tmp/local
 prefix=${dstroot}
 libdir=${dstroot}/lib
@@ -145,7 +145,7 @@ build_wine()
 
 patch_wine()
 (
-    set -- "${prjdir}"/patch/wine___*.diff
+    set -- "${proj_root}"/patch/wine___*.diff
     for f
     do
         test -e "${f}" || continue
@@ -207,9 +207,11 @@ change_install_name()
 
     set -- $(find -H ${libdir} -type f \( -name "*.dylib" -o -name "*.so" \))
     set +x
+    i=0
     for f
     do
-        printf '.'
+        ((i++))
+        printf '\r%4d/%4d' ${i} ${#}
         case ${f} in
         *.dylib)
             change_id "${f}"
@@ -217,23 +219,24 @@ change_install_name()
         esac
         change_link "${f}"
     done; unset f
+    echo
     set -x
 )
 
 make_distfile()
 (
     ## WINELOADER
-    install -m 0755 "${prjdir}"/wineloader.sh.in ${prefix}/bin/nihonshu
+    install -m 0755 "${proj_root}"/wineloader.sh.in ${prefix}/bin/nihonshu
 
     ## INF
-    install -d                               ${prefix}/share/wine/inf
-    cp "${prjdir}"/osx-wine-inf/osx-wine.inf ${prefix}/share/wine/inf/osx-wine.inf
+    install -d                                  ${prefix}/share/wine/inf
+    cp "${proj_root}"/osx-wine-inf/osx-wine.inf ${prefix}/share/wine/inf/osx-wine.inf
 
     ## DOC
     install -m 0644 ${builddir}/wine/LICENSE ${prefix}/share/wine/LICENSE
     install -d                               ${prefix}/share/nihonshu
-    install -m 0644 "${prjdir}"/LICENSE      ${prefix}/share/nihonshu/LICENSE
-    echo "${project_version}"               >${prefix}/share/nihonshu/VERSION
+    install -m 0644 "${proj_root}"/LICENSE   ${prefix}/share/nihonshu/LICENSE
+    echo "${proj_version}"                  >${prefix}/share/nihonshu/VERSION
 
     ## WINETRICKS
     install -m 0755 "${srcdir}"/winetricks/src/winetricks ${prefix}/bin/winetricks
@@ -241,14 +244,14 @@ make_distfile()
     install -m 0644 "${srcdir}"/winetricks/COPYING        ${prefix}/share/winetricks/COPYING
 
     ## FONT
-    tar xf "${prjdir}"/contrib/VLGothic-20141206.tar.bz2 \
+    tar xf "${proj_root}"/contrib/VLGothic-20141206.tar.bz2 \
         -C ${prefix}/share/wine/fonts \
         --strip-components 1 \
         --include '*.ttf'
 
     ## ARCHIVE
     wine_version=$(${prefix}/bin/wine --version)
-    distfile="${prjdir}"/distfiles/${wine_version}_nihonshu-${project_version}.tar.bz2
+    distfile=${proj_root}/distfiles/${wine_version}_nihonshu-${proj_version}.tar.bz2
     touch "${distfile}" || mkdir -p "$(dirname "${distfile}")"
     tar cf - -C ${prefix} \
         --exclude './lib/cmake' \
@@ -257,6 +260,11 @@ make_distfile()
         . \
     | bzip2 >"${distfile}"
 
+    for f in "${proj_root}"/script.d/*.sh
+    do
+        test -f "${f}" || continue
+        . "${f}"
+    done
 )
 
 #init

@@ -3,8 +3,8 @@
  set -u
  set -x
 
-prjdir=$(cd "$(dirname "${0}")" && pwd)
-srcdir="${prjdir}"/src
+proj_root=$(cd "$(dirname "${0}")" && pwd)
+srcdir="${proj_root}"/src
 ncpu=$(($(/usr/sbin/sysctl -n hw.logicalcpu) + 1))
 
 dstroot=/tmp/local
@@ -632,7 +632,7 @@ build_libusb()(
  build_freetype
  build_harfbuzz
  build_freetype
- build_libjpeg
- build_libtiff
+#build_libjpeg
+#build_libtiff
  build_lcms
  create_archive
