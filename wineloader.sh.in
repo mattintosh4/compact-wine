@@ -86,7 +86,29 @@ check_timestamp()
       setupapi,InstallHinfSection DefaultInstall 128 \
       '\\?\'unix${inftemp}
     rm ${inftemp}
-  done
+  done; unset f
+
+  for f in \
+    cmd      \
+    control  \
+    dxdiag   \
+    explorer \
+    iexplore \
+    notepad  \
+    regedit  \
+    taskmgr  \
+    winecfg  \
+    winemine \
+    
+  do
+    case ${f} in
+    notepad|\
+    regedit) dir=../../../windows;;
+    *      ) dir=../../../windows/system32;;
+    esac
+    ln -s ${dir}/${f}.exe "${WINEPREFIX}"/drive_c/users/`whoami`/Favorites/${f}.exe
+    unset dir
+  done; unset f
 }
 check_timestamp
 
