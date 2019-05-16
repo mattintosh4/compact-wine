@@ -5,14 +5,25 @@
 
 prjdir=$(cd "$(dirname "${0}")" && pwd)
 srcdir="${prjdir}"/src
-ncpu=$(($(/usr/sbin/sysctl -n hw.logicalcpu) + 1))
-
 dstroot=/tmp/local
 prefix=${dstroot}
 libdir=${dstroot}/lib
 bindir=${prefix}/libexec/bin
 incdir=${prefix}/libexec/include
 builddir=/tmp/_build
+
+ncpu=$(($(/usr/sbin/sysctl -n hw.logicalcpu) + 1))
+
+save_time()
+(
+    printf '%s\t%s\n' "$(date)" "${*}" >>${builddir}/build.log
+)
+
+make()
+(
+    command make -j ${ncpu} "${@}"
+)
+
 
 set -a
     LANG=ja_JP.UTF-8
@@ -63,7 +74,8 @@ set -a
     PKG_CONFIG_PATH=
 set +a
 
-init(){
+init()
+{
     test ! -d ${dstroot} \
     || rm -rf ${dstroot}
     mkdir -p  ${dstroot}
@@ -73,16 +85,20 @@ init(){
     mkdir -p  ${builddir}
 
     test -e "${srcdir}"/sdk.tar.bz2 || ./build-dep.sh
-    tar xf "${srcdir}"/sdk.tar.bz2 -C ${dstroot}
+    tar xf  "${srcdir}"/sdk.tar.bz2 \
+        --exclude '*/share/' \
+        --exclude '*/cmake/' \
+        --exclude '*.a' \
+        --exclude '*.la' \
+        -C ${dstroot}
+
 }
 
-save_time(){
-    printf '%s\t%s\n' "$(date)" "${*}" >>${builddir}/build.log
-}
-
-build_wine()(
-    name=wine-stable
-    rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}/
+build_wine()
+(
+    name=wine
+#   rsync -a --delete "${srcdir}"/${name}/        ${builddir}/${name}/
+    rsync -a --delete "${srcdir}"/${name}-stable/ ${builddir}/${name}/
     cd ${builddir}/${name}
 
     patch_wine
@@ -90,51 +106,35 @@ build_wine()(
     args=(
         --prefix=${prefix}
         --with-cms
-        --with-png
         --with-freetype
+        --with-png
         --with-x
         --x-includes=/opt/X11/include
         --x-libraries=/opt/X11/lib
     )
 
-    for f in \
-        m64 \
-        m32 \
-    
-    do
-        test ! -d ${builddir}/${name}/${f} \
-        || rm -rf ${builddir}/${name}/${f}
-        mkdir -p  ${builddir}/${name}/${f}
-        cd        ${builddir}/${name}/${f}
+    ## 64-bit (first)
+    test ! -d ${builddir}/${name}/m64 \
+    || rm -rf ${builddir}/${name}/m64
+    mkdir -p  ${builddir}/${name}/m64
+    cd        ${builddir}/${name}/m64
+    ../configure "${args[@]}" --enable-win64
+    make dlldir=${libdir}
 
-        case ${f} in
-        m32)
-            ../configure "${args[@]}" --with-win64=../m64
-            make -j ${ncpu}
-        ;;
-        m64)
-            ../configure "${args[@]}" --enable-win64
-            make -j ${ncpu} dlldir=${libdir}
-        ;;
-        esac
-    done; unset f
+    ## 32-bit
+    test ! -d ${builddir}/${name}/m32 \
+    || rm -rf ${builddir}/${name}/m32
+    mkdir -p  ${builddir}/${name}/m32
+    cd        ${builddir}/${name}/m32
+    ../configure "${args[@]}" --with-win64=../m64
+    make
+    make install
 
-    for f in \
-        m32 \
-        m64 \
-    
-    do
-        case ${f} in
-        m32)
-            make -j ${ncpu} install
-        ;;
-        m64)
-            make -j ${ncpu} install dlldir=${libdir}
-        ;;
-        esac
-    done
+    ## 64-bit (second)
+    cd        ${builddir}/${name}/m64
+    make install dlldir=${libdir}
 
-    ## universal
+    ## UNIVERSAL
     lipo -create \
         -arch i386   ${builddir}/${name}/m32/libs/wine/libwine.1.0.dylib \
         -arch x86_64 ${builddir}/${name}/m64/libs/wine/libwine.1.0.dylib \
@@ -208,6 +208,46 @@ change_install_name()
     done; unset f
 )
 
+make_distfile()
+(
+    ## WINELOADER
+    install -m 0755 "${prjdir}"/wineloader.sh.in ${prefix}/bin/nihonshu
+
+    ## INF
+    install -d                               ${prefix}/share/wine/inf
+    cp "${prjdir}"/osx-wine-inf/osx-wine.inf ${prefix}/share/wine/inf/osx-wine.inf
+
+    ## DOC
+    install -m 0644 ${builddir}/wine/LICENSE ${prefix}/share/wine/LICENSE
+    install -d                               ${prefix}/share/nihonshu
+    install -m 0644 "${prjdir}"/LICENSE      ${prefix}/share/nihonshu/LICENSE
+    echo "${project_version}"               >${prefix}/share/nihonshu/VERSION
+
+    ## WINETRICKS
+    install -m 0755 "${srcdir}"/winetricks/src/winetricks ${prefix}/bin/winetricks
+    install -d                                            ${prefix}/share/winetricks
+    install -m 0644 "${srcdir}"/winetricks/COPYING        ${prefix}/share/winetricks/COPYING
+
+    ## FONT
+    tar xf "${prjdir}"/contrib/VLGothic-20141206.tar.bz2 \
+        -C ${prefix}/share/wine/fonts \
+        --strip-components 1 \
+        --include '*.ttf'
+
+    ## ARCHIVE
+    wine_version=$(${prefix}/bin/wine --version)
+    distfile="${prjdir}"/distfiles/${wine_version}_nihonshu-${project_version}.tar.bz2
+    touch "${distfile}" || mkdir -p "$(dirname "${distfile}")"
+    tar cf - -C ${prefix} \
+        --exclude './lib/cmake' \
+        --exclude './lib/pkgconfig' \
+        --exclude './libexec' \
+        . \
+    | bzip >"${distfile}"
+
+)
+
  init
  build_wine
  change_install_name
+ make_distfile
