@@ -87,8 +87,8 @@ init()
 
     test -e "${srcdir}"/sdk.tar.bz2 || ./build-dep.sh
     tar xf  "${srcdir}"/sdk.tar.bz2 \
-        --exclude '*/share/' \
-        --exclude '*/cmake/' \
+        --exclude '*/share' \
+        --exclude '*/cmake' \
         --exclude '*.a' \
         --exclude '*.la' \
         -C ${dstroot}
@@ -267,7 +267,7 @@ make_distfile()
     done
 )
 
-#init
-#build_wine
+ init
+ build_wine
  change_install_name
  make_distfile
