@@ -82,7 +82,7 @@ save_time(){
 
 build_wine()(
     name=wine-stable
-    rsync -a --delete "${srcdir}"/src/${name} ${builddir}/${name}
+    rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}/
     cd ${builddir}/${name}
 
     patch_wine
@@ -170,10 +170,8 @@ change_install_name()
         /opt/X11/lib/*)
             return 1
         ;;
-        *)
-            return 0
-        ;;
         esac
+        return 0
     )
 
     change_id()
@@ -185,8 +183,6 @@ change_install_name()
         shift || return 0 # truncate otool header
         is_external_lib? "${1}" || return 0
         install_name_tool -id @rpath/"${1##*/}" "${obj}"
-        ;;
-        esac
     )
 
     change_link()
