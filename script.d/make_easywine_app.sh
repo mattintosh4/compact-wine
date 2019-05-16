@@ -14,7 +14,7 @@ on main(argv)
   set beginning of argv to quoted form of POSIX path of (path to me) & "Contents/Resources/wine/bin/nihonshu"
   set beginning of argv to "WINEPREFIX=$HOME/Library/Caches/Wine/prefixes/default"
   set beginning of argv to "WINEDEBUG=-all"
---set end       of argv to "&>/dev/null &"
+  set end       of argv to "&>/dev/null &"
   set temp to text item delimiters of AppleScript
   set text item delimiters of AppleScript to space
   set argv to argv as string
