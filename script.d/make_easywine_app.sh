@@ -6,7 +6,8 @@
 
 mkdir -p "${proj_root}"/distfiles
 
-app=${proj_root}/distfiles/EasyWine.app
+appname=EasyWine64
+app=${proj_root}/distfiles/${appname}.app
 test ! -e "${app}" || rm -r "${app}"
 
 osacompile -o "${app}" <<\!
@@ -116,7 +117,7 @@ hdiutil create \
   -format UDBZ \
   -fs HFS+J \
   -srcdir "${proj_root}"/distfiles/EasyWine \
-  -volname EasyWine-${proj_version} \
-  "${proj_root}"/distfiles/EasyWine-${proj_version}_${wine_version}.dmg
+  -volname ${appname}-${proj_version} \
+  "${proj_root}"/distfiles/${appname}-${proj_version}_${wine_version}.dmg
 
 unset app

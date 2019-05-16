@@ -106,7 +106,7 @@ check_timestamp()
     regedit) dir=../../../windows;;
     *      ) dir=../../../windows/system32;;
     esac
-    ln -s ${dir}/${f}.exe "${WINEPREFIX}"/drive_c/users/`whoami`/Favorites/${f}.exe
+    ln -sf ${dir}/${f}.exe "${WINEPREFIX}"/drive_c/users/`whoami`/Favorites/${f}.exe
     unset dir
   done; unset f
 }
