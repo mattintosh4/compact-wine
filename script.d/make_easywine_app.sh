@@ -12,8 +12,19 @@ test ! -e "${app}" || rm -r "${app}"
 
 osacompile -o "${app}" <<\!
 on main(argv)
+  set temp to text item delimiters of AppleScript
+  set text item delimiters of AppleScript to "/"
+  set appname to item -1 of (every text item of (text 1 thru -2 of (POSIX path of (path to me))))
+  set text item delimiters of AppleScript to temp
+
   set beginning of argv to quoted form of POSIX path of (path to me) & "Contents/Resources/wine/bin/nihonshu"
-  set beginning of argv to "WINEPREFIX=$HOME/Library/Caches/Wine/prefixes/default"
+  if appname = "EasyWine64.app" then
+    set beginning of argv to "WINEARCH=win64"
+    set beginning of argv to "WINEPREFIX=$HOME/Library/Caches/Wine/prefixes/default64"
+  else
+    set beginning of argv to "WINEARCH=win32"
+    set beginning of argv to "WINEPREFIX=$HOME/Library/Caches/Wine/prefixes/default"
+  end if
   set beginning of argv to "WINEDEBUG=-all"
   set end       of argv to "&>/dev/null &"
   set temp to text item delimiters of AppleScript
