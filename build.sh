@@ -242,6 +242,7 @@ make_distfile()
     install -m 0755 "${srcdir}"/winetricks/src/winetricks ${prefix}/bin/winetricks
     install -d                                            ${prefix}/share/winetricks
     install -m 0644 "${srcdir}"/winetricks/COPYING        ${prefix}/share/winetricks/COPYING
+    install -m 0755 "${srcdir}"/cabextract/cabextract     ${prefix}/bin/cabextract
 
     ## FONT
     tar xf "${proj_root}"/contrib/VLGothic-20141206.tar.bz2 \
