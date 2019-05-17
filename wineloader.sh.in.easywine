@@ -89,16 +89,17 @@ check_timestamp()
   done; unset f
 
   for f in \
-    cmd      \
-    control  \
-    dxdiag   \
-    explorer \
-    iexplore \
-    notepad  \
-    regedit  \
-    taskmgr  \
-    winecfg  \
-    winemine \
+    cmd         \
+    control     \
+    dxdiag      \
+    explorer    \
+    iexplore    \
+    notepad     \
+    regedit     \
+    taskmgr     \
+    uninstaller \
+    winecfg     \
+    winemine    \
 
   do
     case ${f} in
