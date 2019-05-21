@@ -91,6 +91,7 @@ init(){
             bison \
             cmake \
             flex \
+            fontforge \
             gettext \
             libtool \
             nasm \
