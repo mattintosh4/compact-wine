@@ -38,7 +38,7 @@ set -a
     CFLAGS+=" -arch x86_64"
     CFLAGS+=" -O2"
 #   CFLAGS+=" -std=gnu89"
-#   CFLAGS+=" -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
+    CFLAGS+=" -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
     CXXFLAGS=
     CXXFLAGS+=" -arch i386"
     CXXFLAGS+=" -arch x86_64"
@@ -50,7 +50,7 @@ set -a
     LDFLAGS=
 #   LDFLAGS+=" -Wl,-headerpad_max_install_names"
     LDFLAGS+=" -Wl,-syslibroot,${SDKROOT}"
-#   LDFLAGS+=" -Wl,-macosx_version_min,${MACOSX_DEPLOYMENT_TARGET}"
+    LDFLAGS+=" -Wl,-macosx_version_min,${MACOSX_DEPLOYMENT_TARGET}"
 #   LDFLAGS+=" -Z"
     LDFLAGS+=" -L${libdir}"
 #   LDFLAGS+=" -L/usr/lib"
