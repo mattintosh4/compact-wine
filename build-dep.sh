@@ -628,6 +628,25 @@ build_libusb()(
     make -j ${ncpu} install
 )
 
+build_openal(){
+    name=openal-soft
+    rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}/
+    cd ${builddir}/${name}
+    git checkout master
+    mkdir _build
+    cd    _build
+    cmake -DCMAKE_INSTALL_PREFIX=${prefix} \
+          -DCMAKE_INSTALL_NAME_DIR=${libdir} \
+          -DCMAKE_INSTALL_LIBDIR=${libdir} \
+          -DEXAMPLES=OFF \
+    ..
+    cmake -L ..
+    make -j ${ncpu}
+    save_time // ${name} make
+    make -j ${ncpu} install
+    save_time // ${name} make install
+}
+
  init
  build_libpng
  build_freetype
@@ -636,4 +655,5 @@ build_libusb()(
 #build_libjpeg
 #build_libtiff
  build_lcms
+ build_openal
  create_archive
