@@ -1,5 +1,5 @@
 diff --git a/po/ja.po b/po/ja.po
-index 1ba61a00a6..2d2fe4ff73 100644
+index 1ba61a00a6..4a4028c5ee 100644
 --- a/po/ja.po
 +++ b/po/ja.po
 @@ -8713,32 +8713,32 @@ msgstr "プログラム"
@@ -89,20 +89,6 @@ index 1ba61a00a6..2d2fe4ff73 100644
  
  #: shell32.rc:216
  msgid "Program Files (x86)"
-@@ -8794,11 +8794,11 @@ msgstr "Program Files (x86)"
- 
- #: shell32.rc:224
- msgid "Contacts"
--msgstr "Contacs"
-+msgstr "アドレス帳"
- 
- #: shell32.rc:225 winefile.rc:113
- msgid "Links"
--msgstr "Links"
-+msgstr "リンク"
- 
- #: shell32.rc:226
- msgid "Slide Shows"
 @@ -8818,11 +8818,11 @@ msgstr "機種名"
  
  #: shell32.rc:228
