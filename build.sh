@@ -38,7 +38,7 @@ set -a
     PATH+=":$(/usr/bin/getconf PATH)"
 
 #   MACOSX_DEPLOYMENT_TARGET=$(xcrun --show-sdk-version)
-    MACOSX_DEPLOYMENT_TARGET=10.10
+    MACOSX_DEPLOYMENT_TARGET=10.11
     SDKROOT=$(xcrun --show-sdk-path)
 
         CC="/opt/local/bin/ccache clang"
@@ -119,7 +119,7 @@ build_wine()
     || rm -rf ${builddir}/${name}/m64
     mkdir -p  ${builddir}/${name}/m64
     cd        ${builddir}/${name}/m64
-    ../configure "${args[@]}" --enable-win64 --libdir=${libdir}
+    ../configure "${args[@]}" --libdir=${libdir} --enable-win64
     make dlldir=${libdir}/wine64
 
     ## 32-bit
