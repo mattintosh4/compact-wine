@@ -38,7 +38,7 @@ set -a
     PATH+=":$(/usr/bin/getconf PATH)"
 
 #   MACOSX_DEPLOYMENT_TARGET=$(xcrun --show-sdk-version)
-    MACOSX_DEPLOYMENT_TARGET=10.11
+    MACOSX_DEPLOYMENT_TARGET=10.10
     SDKROOT=$(xcrun --show-sdk-path)
 
         CC="/opt/local/bin/ccache clang"
