@@ -638,7 +638,12 @@ build_openal(){
     cmake -DCMAKE_INSTALL_PREFIX=${prefix} \
           -DCMAKE_INSTALL_NAME_DIR=${libdir} \
           -DCMAKE_INSTALL_LIBDIR=${libdir} \
-          -DALSOFT_EXAMPLES=0 \
+          -DCMAKE_SYSROOT=${SDKROOT} \
+          -DCMAKE_FIND_ROOT_PATH=${SDKROOT} \
+          -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
+          -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
+          -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY \
+          -DALSOFT_EXAMPLES=OFF \
     ..
     cmake -L ..
     make -j ${ncpu}
