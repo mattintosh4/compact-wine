@@ -229,8 +229,9 @@ make_distfile()
     install -m 0755 "${proj_root}"/wineloader.sh.in ${prefix}/bin/nihonshu
 
     ## INF
-    install -d                                  ${prefix}/share/wine/inf
-    cp "${proj_root}"/osx-wine-inf/osx-wine.inf ${prefix}/share/wine/inf/osx-wine.inf
+    install -d                                    ${prefix}/share/wine/inf
+    cp -a ${prefix}/share/wine/wine.inf           ${prefix}/share/wine/inf/osx-wine.inf
+    cat "${proj_root}"/osx-wine-inf/osx-wine.inf >${prefix}/share/wine/inf/osx-wine.inf
 
     ## DOC
     install -m 0644 ${builddir}/wine/LICENSE ${prefix}/share/wine/LICENSE
