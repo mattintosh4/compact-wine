@@ -88,6 +88,7 @@ check_timestamp()
     rm ${inftemp}
   done; unset f
 
+  whoami=$(whoami)
   for f in \
     cmd         \
     control     \
@@ -102,13 +103,14 @@ check_timestamp()
     winemine    \
 
   do
-    case ${f} in
-    notepad|\
-    regedit) dir=../../../windows;;
-    *      ) dir=../../../windows/system32;;
-    esac
-    ln -sf ${dir}/${f}.exe "${WINEPREFIX}"/drive_c/users/`whoami`/Favorites/${f}.exe
-    unset dir
+    (
+      case ${f} in
+      notepad|\
+      regedit) dir=../../../windows;;
+      *      ) dir=../../../windows/system32;;
+      esac
+      ln -sf ${dir}/${f}.exe "${WINEPREFIX}"/drive_c/users/"${whoami}"/Favorites/${f}.exe || :
+    )
   done; unset f
 }
 
