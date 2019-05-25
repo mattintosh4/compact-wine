@@ -71,7 +71,7 @@ check_timestamp()
   read timestamp_ctime 2>/dev/null <"${WINEPREFIX}"/.update-timestamp || :
   case ${timestamp_ctime:+set} in
   set)
-    ((`stat -f inf_ctime=%c -t %s "${prefix}"/share/wine/wine.inf`))
+    ((`stat -f inf_ctime=%B -t %s "${prefix}"/share/wine/wine.inf`))
     ((${timestamp_ctime} < ${inf_ctime})) || return 0
     ;;
   esac
