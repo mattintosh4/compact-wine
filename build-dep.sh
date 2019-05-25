@@ -638,7 +638,7 @@ build_openal(){
     cmake -DCMAKE_INSTALL_PREFIX=${prefix} \
           -DCMAKE_INSTALL_NAME_DIR=${libdir} \
           -DCMAKE_INSTALL_LIBDIR=${libdir} \
-          -DEXAMPLES=OFF \
+          -DALSOFT_EXAMPLES=0 \
     ..
     cmake -L ..
     make -j ${ncpu}
@@ -648,6 +648,7 @@ build_openal(){
 }
 
  init
+ build_openal
  build_libpng
  build_freetype
  build_harfbuzz
@@ -655,5 +656,4 @@ build_openal(){
 #build_libjpeg
 #build_libtiff
  build_lcms
- build_openal
  create_archive
