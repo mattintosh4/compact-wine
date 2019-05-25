@@ -88,6 +88,8 @@ check_timestamp()
     rm ${inftemp}
   done; unset f
 
+  import_native_dlls
+
   whoami=$(whoami)
   for f in \
     cmd         \
@@ -114,19 +116,40 @@ check_timestamp()
   done; unset f
 }
 
-import_native_dll(){
-  for f in "${prefix}"/lib/wine/nativedlls/*.dll
+import_native_dlls(){
+  SystemRoot=${WINEPREFIX}/drive_c/windows
+  win32dir=${SystemRoot}/syswow64
+  win64dir=${SystemRoot}/system32
+  set -- "${prefix}"/lib/wine/nativedlls/win{32,64}/*.dll
+  for f
   do
-    test -f     "${f}" \
-    && ! cmp -s "${f}" "${WINEPREFIX}"/drive_c/windows/system32/${f##*/} || continue
-    cp -a       "${f}" "${WINEPREFIX}"/drive_c/windows/system32/${f##*/}
-  done
+    test -f "${f}" || continue
+    case ${f} in
+    */win32/*)
+        ! cmp -s "${f}" "${win32dir}"/${f##*/} || continue
+        cp -a    "${f}" "${win32dir}"/${f##*/}
+        case ${f} in
+        */quartz.dll)
+            "${WINE}" regedit - <<!
+REGEDIT4
+[HKEY_CURRENT_USER\\Software\\Wine\\DllOverrides]
+"quartz"="native,builtin"
+!
+            "${WINE}" regsvr32 quartz.dll
+        ;;
+        esac
+    ;;
+    */win64/*)
+        ! cmp -s "${f}" "${win64dir}"/${f##*/} || continue
+        cp -a    "${f}" "${win64dir}"/${f##*/}
+    ;;
+    esac
+  done; unset f
 }
 
 
 
 check_timestamp
-import_native_dll
 
 
 
