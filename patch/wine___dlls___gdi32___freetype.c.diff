@@ -1,0 +1,24 @@
+diff --git a/dlls/gdi32/freetype.c b/dlls/gdi32/freetype.c
+index c38108eece..6a8da4bc61 100644
+--- a/dlls/gdi32/freetype.c
++++ b/dlls/gdi32/freetype.c
+@@ -3800,7 +3800,7 @@ static const struct nls_update_font_list
+     /* Japanese */
+     { 932, 932, "vga932.fon", "jvgafix.fon", "jvgasys.fon",
+       "coure.fon", "serife.fon", "jsmalle.fon", "sserife.fon", "sseriff.fon",
+-      "MS UI Gothic","MS Serif",
++      "VL PGothic", "MS Serif",
+       NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+       { 0 }, { 0 }, { 0 }
+     },
+@@ -3943,7 +3943,9 @@ static void update_font_system_link_info(UINT current_ansi_codepage)
+          'B','A','T','A','N','G','.','T','T','C',',','B','a','t','a','n','g','\0',
+          '\0'};
+     static const WCHAR system_link_japanese[] =
+-        {'M','S','G','O','T','H','I','C','.','T','T','C',',','M','S',' ','U','I',' ','G','o','t','h','i','c','\0',
++        {'V','L','-','P','G','o','t','h','i','c','-','R','e','g','u','l','a','r','.','t','t','f',',',
++         'V','L',' ','P','G','o','t','h','i','c','\0',
++         'M','S','G','O','T','H','I','C','.','T','T','C',',','M','S',' ','U','I',' ','G','o','t','h','i','c','\0',
+          'M','I','N','G','L','I','U','.','T','T','C',',','P','M','i','n','g','L','i','U','\0',
+          'S','I','M','S','U','N','.','T','T','C',',','S','i','m','S','u','n','\0',
+          'G','U','L','I','M','.','T','T','C',',','G','u','l','i','m','\0',
