@@ -1,5 +1,5 @@
 diff --git a/po/ja.po b/po/ja.po
-index 1ba61a00a6..4a4028c5ee 100644
+index 1ba61a00a6..df920ec372 100644
 --- a/po/ja.po
 +++ b/po/ja.po
 @@ -8713,32 +8713,32 @@ msgstr "プログラム"
@@ -132,3 +132,14 @@ index 1ba61a00a6..4a4028c5ee 100644
  
  #: shell32.rc:169
  msgid "Unable to create new Folder: Permission denied."
+@@ -14782,7 +14782,9 @@ msgstr ""
+ 
+ #: wineboot.rc:46
+ msgid "The Wine configuration in %s is being updated, please wait..."
+-msgstr "%s にある Wine 設定を更新しています。しばらくお待ちください..."
++msgstr "Nihonshu/EasyWine をご利用いただきありがとうございます...(*´ω｀*)\n"
++"\n"
++"%s にある Wine 設定を更新しています。しばらくお待ちください..."
+ 
+ #: winecfg.rc:141
+ msgid ""
