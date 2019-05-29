@@ -229,6 +229,7 @@ make_distfile()
     install -m 0755 "${proj_root}"/wineloader.sh.in ${prefix}/bin/nihonshu
 
     ## INF
+    /usr/bin/sed -i '' $'1s/^/\xef\xbb\xbf/'      ${prefix}/share/wine/wine.inf
     install -d                                    ${prefix}/share/wine/inf
     cp -a ${prefix}/share/wine/wine.inf           ${prefix}/share/wine/inf/osx-wine.inf
     cat "${proj_root}"/osx-wine-inf/osx-wine.inf >${prefix}/share/wine/inf/osx-wine.inf
