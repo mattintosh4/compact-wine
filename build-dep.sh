@@ -241,7 +241,7 @@ build_harfbuzz()(
 
 build_libjpeg()(
     name=libjpeg-turbo
-    rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}
+    rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}/
     cd ${builddir}/${name}
     git checkout master
     cmake -DCMAKE_INSTALL_PREFIX=${prefix} \
@@ -252,6 +252,7 @@ build_libjpeg()(
         -DCMAKE_INSTALL_LIBDIR=${libdir} \
     .
     cmake -L
+    save_time    ${name} make
     make -j ${ncpu}
     save_time // ${name} make
     make -j ${ncpu} install
@@ -260,7 +261,7 @@ build_libjpeg()(
 
 build_libtiff()(
     name=libtiff
-    rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}
+    rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}/
     cd ${builddir}/${name}
     git checkout master
     ./autogen.sh
@@ -274,6 +275,7 @@ build_libtiff()(
         --without-x
     )
     ./configure "${args[@]}"
+    save_time    ${name} make
     make -j ${ncpu}
     save_time // ${name} make
     make -j ${ncpu} install
@@ -282,7 +284,7 @@ build_libtiff()(
 
 build_lcms()(
     name=Little-CMS
-    rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}
+    rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}/
     cd ${builddir}/${name}
     git checkout master
     args=(
@@ -658,7 +660,7 @@ build_openal(){
  build_freetype
  build_harfbuzz
  build_freetype
-#build_libjpeg
-#build_libtiff
+ build_libjpeg
+ build_libtiff
  build_lcms
  create_archive
