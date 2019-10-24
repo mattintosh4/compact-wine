@@ -52,29 +52,32 @@ install -m 0644 "${proj_root}"/contrib/Blackvariant-Button-Ui-System-Apps-BootCa
                 "${app}"/Contents/Resources/easywine.icns
 
 mkdir -p "${app}"/Contents/Resources/wine/lib/wine/nativedlls
-tempdir=`mktemp -d`
-(
-  cd ${tempdir}
-  set -- 38 39 40 41 42 43
-  for f
-  do
-    /opt/local/bin/7z e -y "${proj_root}"/rsrc/directx_Jun2010_redist.exe -i"!*d3dx9_${f}_x86.cab"
-    /opt/local/bin/7z e -y *_d3dx9_${f}_x86.cab d3dx9_${f}.dll
-  done
-  
-  /opt/local/bin/7z e -y "${proj_root}"/rsrc/directx_Jun2010_redist.exe -i"!*X3DAudio_x86.cab"
-  for f in *_X3DAudio_x86.cab
-  do
-    /opt/local/bin/7z e -y ${f} -i"!*.dll"
-  done
-  for f in *.dll
-  do
-    f=`echo ${f} | tr [:upper:] [:lower:]`
-    cp -a ${f} "${app}"/Contents/Resources/wine/lib/wine/nativedlls/${f}
-  done
-)
-rm -rf ${tempdir}
-unset tempdir
+cp -a    "${proj_root}"/rsrc/directx_Jun2010_redist/win32 \
+         "${proj_root}"/rsrc/directx_Jun2010_redist/win64 \
+         "${app}"/Contents/Resources/wine/lib/wine/nativedlls
+#tempdir=`mktemp -d`
+#(
+#  cd ${tempdir}
+#  set -- 38 39 40 41 42 43
+#  for f
+#  do
+#    /opt/local/bin/7z e -y "${proj_root}"/rsrc/directx_Jun2010_redist.exe -i"!*d3dx9_${f}_x86.cab"
+#    /opt/local/bin/7z e -y *_d3dx9_${f}_x86.cab d3dx9_${f}.dll
+#  done
+#  
+#  /opt/local/bin/7z e -y "${proj_root}"/rsrc/directx_Jun2010_redist.exe -i"!*X3DAudio_x86.cab"
+#  for f in *_X3DAudio_x86.cab
+#  do
+#    /opt/local/bin/7z e -y ${f} -i"!*.dll"
+#  done
+#  for f in *.dll
+#  do
+#    f=`echo ${f} | tr [:upper:] [:lower:]`
+#    cp -a ${f} "${app}"/Contents/Resources/wine/lib/wine/nativedlls/${f}
+#  done
+#)
+#rm -rf ${tempdir}
+#unset tempdir
 install -m 0755 "${proj_root}"/wineloader.sh.in.easywine \
                 "${app}"/Contents/Resources/wine/bin/nihonshu
 
