@@ -111,6 +111,7 @@ check_timestamp()
       regedit) dir=../../../windows;;
       *      ) dir=../../../windows/system32;;
       esac
+      echo Symlink: ${f}.exe
       ln -sf ${dir}/${f}.exe "${WINEPREFIX}"/drive_c/users/"${whoami}"/Favorites/${f}.exe || :
     )
   done; unset f
@@ -126,22 +127,25 @@ import_native_dlls(){
     test -f "${f}" || continue
     case ${f} in
     */win32/*)
-        ! cmp -s "${f}" "${win32dir}"/${f##*/} || continue
-        cp -a    "${f}" "${win32dir}"/${f##*/}
-        case ${f} in
-        */quartz.dll)
-            "${WINE}" regedit - <<!
+      ! cmp -s "${f}" "${win32dir}"/${f##*/} || continue
+      echo  Override: "${win32dir}"/${f##*/}
+      cp -a    "${f}" "${win32dir}"/${f##*/}
+      case ${f} in
+      */quartz.dll)
+        echo  Override: "${win32dir}"/${f##*/}
+        "${WINE}" regedit - <<!
 REGEDIT4
 [HKEY_CURRENT_USER\\Software\\Wine\\DllOverrides]
 "quartz"="native,builtin"
 !
             "${WINE}" regsvr32 quartz.dll
-        ;;
-        esac
+      ;;
+      esac
     ;;
     */win64/*)
-        ! cmp -s "${f}" "${win64dir}"/${f##*/} || continue
-        cp -a    "${f}" "${win64dir}"/${f##*/}
+      ! cmp -s "${f}" "${win64dir}"/${f##*/} || continue
+      echo  Override: "${win64dir}"/${f##*/}
+      cp -a    "${f}" "${win64dir}"/${f##*/}
     ;;
     esac
   done; unset f
@@ -154,3 +158,5 @@ check_timestamp
 
 
 exec "${WINE}" "${@}"
+
+# vim:fenc=utf-8:ff=unix:ft=sh:et:sw=2:ts=2:sts=2
