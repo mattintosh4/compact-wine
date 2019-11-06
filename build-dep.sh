@@ -654,7 +654,49 @@ build_openal(){
     save_time // ${name} make install
 }
 
+build_mpg123(){(
+    name=mpg123-1.25.13
+#   rsync -a --delete "${srcdir}"/${name}-1.25.13/ ${builddir}/${name}
+    tar xjf "${srcdir}"/${name}.tar.bz2 -C ${builddir}
+    cd ${builddir}/${name}
+    args=(
+        --prefix=${prefix}
+        --libdir=${libdir}
+        --disable-dependency-tracking
+        --disable-static
+        --with-audio=coreaudio
+    )
+    mkdir m32 m64
+    (
+        cd m32
+        CFLAGS=${CFLAGS/ -arch x86_64/}
+        ../configure "${args[@]}" --with-cpu=i586
+        make -j ${ncpu} -w all
+    )
+    (
+        cd m64
+        CFLAGS=${CFLAGS/ -arch i386/}
+        ../configure "${args[@]}" --with-cpu=x86-64
+        make -j ${ncpu} -w all
+    )
+    # LIBRARIES
+    mkdir -p ${libdir}
+    lipo -create \
+    -arch i386   m32/src/libmpg123/.libs/libmpg123.0.dylib \
+    -arch x86_64 m64/src/libmpg123/.libs/libmpg123.0.dylib \
+    -output                    ${libdir}/libmpg123.0.dylib
+    ln -sf libmpg123.0.dylib   ${libdir}/libmpg123.dylib
+    # HEADERS
+    mkdir -p                                  ${incdir}
+    install -m 644     src/libmpg123/fmt123.h ${incdir}
+    install -m 644 m64/src/libmpg123/mpg123.h ${incdir}
+    # PKG-CONFIG
+    mkdir -p                        ${libdir}/pkgconfig
+    install -m 644 m64/libmpg123.pc ${libdir}/pkgconfig
+)}
+
  init
+ build_mpg123
  build_openal
  build_libpng
  build_freetype
