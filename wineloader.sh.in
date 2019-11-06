@@ -68,7 +68,9 @@ check_timestamp()
 {
   mkdir -p "${WINEPREFIX}"
 
+  save_IFS=${IFS} IFS=$' \t\n\r'
   read timestamp_ctime 2>/dev/null <"${WINEPREFIX}"/.update-timestamp || :
+  IFS=${save_IFS}
   case ${timestamp_ctime:+set} in
   set)
     ((`stat -f inf_ctime=%B -t %s "${prefix}"/share/wine/wine.inf`))
