@@ -91,7 +91,17 @@ change_link(){
 }
 
 create_archive(){
-    tar cf - -C $(dirname ${libdir}) . | bzip2 >"${srcdir}"/sdk.tar.bz2
+    mkdir -p ${libdir}64
+    cd       ${libdir}64
+        for f in ../lib/*.dylib
+        do
+            test -f "${f}" || continue
+            ln -s "${f}"
+        done
+    cd -
+
+    tar cf - -C $(dirname ${libdir}) . \
+    | bzip2 >"${srcdir}"/sdk.tar.bz2
 }
 
 build_ncurses()(
