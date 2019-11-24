@@ -137,6 +137,13 @@ hdiutil create \
   -fs HFS+J \
   -srcdir "${proj_root}"/distfiles/EasyWine \
   -volname ${appname}-${proj_version} \
-  "${proj_root}"/distfiles/${appname}-${proj_version}_${wine_version}.dmg
+  "${proj_root}"/distfiles/${appname}_${proj_version}_${wine_version}.dmg
+
+(
+    cd "${proj_root}"/distfiles/EasyWine
+    /opt/local/bin/7z a \
+    "${proj_root}"/distfiles/${appname}_${proj_version}_${wine_version}.zip \
+    ${appname}.app
+)
 
 unset app
