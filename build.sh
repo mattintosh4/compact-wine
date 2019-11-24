@@ -15,9 +15,6 @@ builddir=/tmp/_build
 
 . "${proj_root}"/envs.sh
 
-CFLAGS+=" -O2"
-CFLAGS+=" -std=gnu89"
-
 init()
 {
     rmkdir ${dstroot}
@@ -78,6 +75,10 @@ build_wine()
         --x-inc=/opt/X11/include
         --x-lib=/opt/X11/lib
     )
+
+    CFLAGS+=" -O2"
+    CFLAGS+=" -std=gnu89"
+    LDFLAGS+=" -Wl,-rpath,/opt/X11/lib"
 
     ## 64-bit
     mkdir -p m64
