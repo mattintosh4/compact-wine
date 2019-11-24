@@ -156,7 +156,7 @@ change_install_name()
         done; unset f
     )
 
-    set -- $(find -H ${libdir} -type f \( -name "*.dylib" -o -name "*.so" \))
+    set -- $(find -H ${libdir} ${libdir}64 -type f \( -name "*.dylib" -o -name "*.so" \))
     set +x
     i=0
     for f
