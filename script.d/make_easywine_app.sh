@@ -23,9 +23,14 @@ on main(argv)
     set beginning of argv to "WINEPREFIX=$HOME/Library/Caches/Wine/prefixes/default64"
   else
     set beginning of argv to "WINEARCH=win32"
-    set beginning of argv to "WINEPREFIX=$HOME/Library/Caches/Wine/prefixes/default"
+    if appname = "EasyWineRT.app" then
+      set beginning of argv to "WINEPREFIX=$HOME/Library/Caches/Wine/prefixes/defaultRT"
+    else
+      set beginning of argv to "WINEPREFIX=$HOME/Library/Caches/Wine/prefixes/default"
+    end if
   end if
   set beginning of argv to "WINEDEBUG=-all"
+  set beginning of argv to "env"
   set end       of argv to "&>/dev/null &"
   set temp to text item delimiters of AppleScript
   set text item delimiters of AppleScript to space
