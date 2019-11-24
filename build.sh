@@ -31,7 +31,13 @@ init()
         --exclude '*.la' \
         -C ${dstroot}
     (
-        set -- $(port contents $(port installed "*mingw*" | awk 'NR >= 2 { print $1 }') | grep '/opt/local/bin/.*')
+        set -- $(
+            port contents $(
+                port installed "*-w64-mingw32-*" \
+                | awk 'NR >= 2 && $0 ~ /\(active\)/ { print $1 }'
+            ) \
+            | grep '/opt/local/bin/.*'
+        )
         for f
         do
             test -x "${f}" || exit 1
