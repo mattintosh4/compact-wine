@@ -206,7 +206,7 @@ make_distfile()
     ## ARCHIVE
     wine_version=$(${prefix}/bin/wine --version)
     wine_version=${wine_version/wine/wine64}
-    distfile=${proj_root}/distfiles/${wine_version}_nihonshu-${proj_version}.tar.bz2
+    distfile=${proj_root}/distfiles/nihonshu-${proj_version}_${wine_version}.tar.bz2
     touch "${distfile}" || mkdir -p "$(dirname "${distfile}")"
     tar cf - -C ${prefix} \
         --exclude './lib/cmake' \
