@@ -599,7 +599,8 @@ build_openal(){
     name=openal-soft
     rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}/
     cd ${builddir}/${name}
-    git checkout master
+#   git checkout master
+    git checkout -b temp openal-soft-1.19.1
     mkdir _build
     cd    _build
     cmake -DCMAKE_INSTALL_PREFIX=${prefix} \
