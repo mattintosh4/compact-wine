@@ -49,9 +49,17 @@ init()
 build_wine()
 (
     name=wine
-#   rsync -a --delete "${srcdir}"/${name}/        ${builddir}/${name}/
-    rsync -a --delete "${srcdir}"/${name}-stable/ ${builddir}/${name}/
-    cd ${builddir}/${name}
+#   ! false || \
+    {
+        rsync -a --delete "${srcdir}"/${name}/        ${builddir}/${name}/
+        cd ${builddir}/${name}
+        git checkout -b temp wine-4.20
+    }
+    ! false || \
+    {
+        rsync -a --delete "${srcdir}"/${name}-stable/ ${builddir}/${name}/
+        cd ${builddir}/${name}
+    }
 
     patch_wine
 
@@ -59,39 +67,37 @@ build_wine()
         --prefix=${prefix}
         --with-cms
         --with-freetype
+        --with-jpeg
+        --with-mpg123
         --with-png
+        --with-tiff
+        --with-xml
+        --with-xslt
+
         --with-x
         --x-inc=/opt/X11/include
         --x-lib=/opt/X11/lib
     )
 
-    ## 64-bit (first)
-    test ! -d ${builddir}/${name}/m64 \
-    || rm -rf ${builddir}/${name}/m64
-    mkdir -p  ${builddir}/${name}/m64
-    cd        ${builddir}/${name}/m64
-    ../configure "${args[@]}" --libdir=${libdir} --enable-win64
-    make dlldir=${libdir}/wine64
+    ## 64-bit
+    mkdir -p m64
+    cd m64
+        ../configure "${args[@]}" --enable-win64
+        save_time make ${name}
+        make
+        make install
+        save_time make ${name} install
+    cd -
 
     ## 32-bit
-    test ! -d ${builddir}/${name}/m32 \
-    || rm -rf ${builddir}/${name}/m32
-    mkdir -p  ${builddir}/${name}/m32
-    cd        ${builddir}/${name}/m32
-    ../configure "${args[@]}" --with-win64=../m64
-    make
-    make install
-
-    ## 64-bit (second)
-    cd        ${builddir}/${name}/m64
-    make install dlldir=${libdir}/wine64
-
-    ## UNIVERSAL
-    lipo -create \
-        -arch i386   ${builddir}/${name}/m32/libs/wine/libwine.1.0.dylib \
-        -arch x86_64 ${builddir}/${name}/m64/libs/wine/libwine.1.0.dylib \
-        -output                              ${libdir}/libwine.1.0.dylib
-
+    mkdir -p m32
+    cd m32
+        ../configure "${args[@]}" --with-wine64=../m64
+        save_time make ${name}
+        make
+        make install
+        save_time make ${name} install
+    cd -
 )
 
 patch_wine()
