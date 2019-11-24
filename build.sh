@@ -215,6 +215,19 @@ make_distfile()
         . \
     | bzip2 >"${distfile}"
 
+    distfile_zip=${distfile%.tar.*}.zip
+    test ! -e "${distfile_zip}" || rm "${distfile_zip}"
+    tempdir=$(mktemp -d)
+    cp -a ${prefix} ${tempdir}/wine
+    (
+        cd ${tempdir}
+        /opt/local/bin/7z a "${distfile_zip}" wine \
+        -x'!wine/lib/cmake' \
+        -x'!wine/lib/pkgconfig' \
+        -x'!wine/libexec'
+    )
+    rm -rf ${tempdir}
+
     for f in "${proj_root}"/script.d/*.sh
     do
         test -f "${f}" || continue
