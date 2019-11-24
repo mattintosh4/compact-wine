@@ -13,77 +13,15 @@ bindir=${prefix}/libexec/bin
 incdir=${prefix}/libexec/include
 builddir=/tmp/_build
 
-ncpu=$(($(/usr/sbin/sysctl -n hw.logicalcpu) + 1))
+. "${proj_root}"/envs.sh
 
-save_time()
-(
-    printf '%s\t%s\n' "$(date)" "${*}" >>${builddir}/build.log
-)
-
-make()
-(
-    command make -j ${ncpu} "${@}"
-)
-
-
-set -a
-    LANG=ja_JP.UTF-8
-    LC_ALL=ja_JP.UTF-8
-
-    PATH="/dev/null"
-    PATH+=":${bindir}"
-    PATH+=":/opt/local/libexec/gnubin"
-#   PATH+=":/opt/local/libexec/coreutils"
-#   PATH+=":$(/usr/bin/xcode-select -print-path)/usr/bin"
-    PATH+=":$(/usr/bin/getconf PATH)"
-
-#   MACOSX_DEPLOYMENT_TARGET=$(xcrun --show-sdk-version)
-    MACOSX_DEPLOYMENT_TARGET=10.10
-    SDKROOT=$(xcrun --show-sdk-path)
-
-        CC="/opt/local/bin/ccache clang"
-       CPP="/opt/local/bin/ccache clang -E"
-       CXX="/opt/local/bin/ccache clang++"
-    CXXCPP="/opt/local/bin/ccache clang++ -E"
-    CFLAGS=
-#   CFLAGS+=" -arch i386"
-#   CFLAGS+=" -arch x86_64"
-    CFLAGS+=" -O2"
-    CFLAGS+=" -std=gnu89"
-    CFLAGS+=" -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
-    CXXFLAGS=
-#   CXXFLAGS+=" -arch i386"
-#   CXXFLAGS+=" -arch x86_64"
-    CXXFLAGS+=" -O2"
-    CXXFLAGS+=" -stdlib=libc++"
-    CPPFLAGS=
-    CPPFLAGS+=" -isysroot ${SDKROOT}"
-    CPPFLAGS+=" -I${incdir}"
-    LDFLAGS=
-    LDFLAGS+=" -Wl,-syslibroot,${SDKROOT}"
-    LDFLAGS+=" -Wl,-macosx_version_min,${MACOSX_DEPLOYMENT_TARGET}"
-    LDFLAGS+=" -Wl,-headerpad_max_install_names"
-#   LDFLAGS+=" -Z"
-    LDFLAGS+=" -L${libdir}"
-#   LDFLAGS+=" -L/usr/lib"
-#   LDFLAGS+=" -F/System/Library/Frameworks"
-
-#   PKG_CONFIG=/opt/local/bin/pkg-config
-    PKG_CONFIG_LIBDIR=
-    PKG_CONFIG_LIBDIR+=":${libdir}/pkgconfig"
-    PKG_CONFIG_LIBDIR+=":/usr/lib/pkgconfig"
-    PKG_CONFIG_PATH=
-set +a
+CFLAGS+=" -O2"
+CFLAGS+=" -std=gnu89"
 
 init()
 {
-    test ! -d ${dstroot} \
-    || rm -rf ${dstroot}
-    mkdir -p  ${dstroot}
-
-    test ! -d ${builddir} \
-    || rm -rf ${builddir}
-    mkdir -p  ${builddir}
+    rmkdir ${dstroot}
+    rmkdir ${builddir}
 
     test -e "${srcdir}"/sdk.tar.bz2 || ./build-dep.sh
     tar xf  "${srcdir}"/sdk.tar.bz2 \
@@ -92,7 +30,14 @@ init()
         --exclude '*.a' \
         --exclude '*.la' \
         -C ${dstroot}
-
+    (
+        set -- $(port contents $(port installed "*mingw*" | awk 'NR >= 2 { print $1 }') | grep '/opt/local/bin/.*')
+        for f
+        do
+            test -x "${f}" || exit 1
+            ln -sf ccache ${bindir}/"${f##*/}"
+        done
+    )
 }
 
 build_wine()

@@ -14,76 +14,36 @@ bindir=${prefix}/bin
 incdir=${prefix}/include
 builddir=/tmp/_build
 
+. ${proj_root}/envs.sh
+
 set -a
-    LANG=ja_JP.UTF-8
-    LC_ALL=ja_JP.UTF-8
-
-    PATH="/dev/null"
-    PATH+=":${bindir}"
-    PATH+=":/opt/local/libexec/gnubin"
-#   PATH+=":/opt/local/libexec/coreutils"
-#   PATH+=":$(/usr/bin/xcode-select -print-path)/usr/bin"
-    PATH+=":$(/usr/bin/getconf PATH)"
-
-#   MACOSX_DEPLOYMENT_TARGET=$(xcrun --show-sdk-version)
-    MACOSX_DEPLOYMENT_TARGET=10.10
-    SDKROOT=$(xcrun --show-sdk-path)
-
-        CC="/opt/local/bin/ccache clang"
-       CPP="/opt/local/bin/ccache clang -E"
-       CXX="/opt/local/bin/ccache clang++"
-    CXXCPP="/opt/local/bin/ccache clang++ -E"
-    CFLAGS=
     CFLAGS+=" -arch i386"
     CFLAGS+=" -arch x86_64"
     CFLAGS+=" -O2"
-#   CFLAGS+=" -std=gnu89"
-    CFLAGS+=" -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
-    CXXFLAGS=
+
     CXXFLAGS+=" -arch i386"
     CXXFLAGS+=" -arch x86_64"
     CXXFLAGS+=" -O2"
-#   CXXFLAGS+=" -stdlib=libc++"
-    CPPFLAGS=
-    CPPFLAGS+=" -isysroot ${SDKROOT}"
-    CPPFLAGS+=" -I${incdir}"
-    LDFLAGS=
-    LDFLAGS+=" -Wl,-headerpad_max_install_names"
-    LDFLAGS+=" -Wl,-syslibroot,${SDKROOT}"
-    LDFLAGS+=" -Wl,-macosx_version_min,${MACOSX_DEPLOYMENT_TARGET}"
-#   LDFLAGS+=" -Z"
-    LDFLAGS+=" -L${libdir}"
-#   LDFLAGS+=" -L/usr/lib"
-#   LDFLAGS+=" -F/System/Library/Frameworks"
 
-#   PKG_CONFIG=/opt/local/bin/pkg-config
-    PKG_CONFIG_LIBDIR=
-    PKG_CONFIG_LIBDIR+=":${libdir}/pkgconfig"
-    PKG_CONFIG_LIBDIR+=":/usr/lib/pkgconfig"
-    PKG_CONFIG_PATH=
+    LDFLAGS+=" -arch i386"
+    LDFLAGS+=" -arch x86_64"
 set +a
 
 init(){
-    test ! -d ${dstroot} \
-    || rm -rf ${dstroot}
-    mkdir -p  ${dstroot}
+    rmkdir ${builddir}
+    rmkdir ${dstroot}
+    rmkdir ${bindir}
+    rmkdir ${incdir}
+    rmkdir ${libdir}
 
-    mkdir -p  ${bindir}
-    mkdir -p  ${incdir}
-    mkdir -p  ${libdir}
+    ln -sf ${CCACHE} ${bindir}/ccache
+    ln -sf ccache    ${bindir}/cc
+    ln -sf ccache    ${bindir}/c++
+    ln -sf ccache    ${bindir}/gcc
+    ln -sf ccache    ${bindir}/g++
+    ln -sf ccache    ${bindir}/clang
+    ln -sf ccache    ${bindir}/clang++
 
-    test ! -d ${builddir} \
-    || rm -rf ${builddir}
-    mkdir -p  ${builddir}
-    
-    ln -sf /opt/local/bin/ccache ${bindir}/ccache
-    ln -sf ccache                ${bindir}/clang
-    ln -sf ccache                ${bindir}/clang++
-    ln -sf ccache                ${bindir}/gcc
-    ln -sf ccache                ${bindir}/g++
-    ln -sf ccache                ${bindir}/cc
-    ln -sf ccache                ${bindir}/c++
-    
     (
         set -- \
             autoconf \
@@ -98,7 +58,7 @@ init(){
             pkgconfig \
             xz \
 
-        set -- $(env HOME= /opt/local/bin/port contents "${@}" | grep '/opt/local/bin/.*')
+        set -- $(port contents "${@}" | grep '/opt/local/bin/.*')
         for f
         do
             test -x "${f}" || exit 1
@@ -128,10 +88,6 @@ change_link(){
             esac
         done
     done
-}
-
-save_time(){
-    printf '%s\t%s\n' "$(date)" "${*}" >>${builddir}/build.log
 }
 
 create_archive(){
@@ -184,15 +140,14 @@ build_libpng()(
     git checkout master
     args=(
         --prefix=${prefix}
-        --libdir=${libdir}
         --disable-dependency-tracking
         --disable-static
     )
-    ./configure "${args[@]}"
-    make -j ${ncpu}
-    save_time // ${name} make
-    make -j ${ncpu} install
-    save_time // ${name} make install
+    ./configure "${args[@]}" --libdir=${libdir}
+    save_time ${name} make
+    make
+    make install
+    save_time ${name} make install
 )
 
 build_freetype()(
@@ -214,11 +169,11 @@ build_freetype()(
         --enable-freetype-config
         --with-png
     )
-    ./configure "${args[@]}"
-    make -j ${ncpu}
-    save_time // ${name} make
-    make -j ${ncpu} install
-    save_time // ${name} make install
+    ./configure "${args[@]}" --libdir=${libdir}
+    save_time ${name} make
+    make
+    make install
+    save_time ${name} make install
 )
 
 build_harfbuzz()(
@@ -234,8 +189,10 @@ build_harfbuzz()(
         --disable-silent-rules
     )
     ./configure "${args[@]}"
-    make -j ${ncpu}
-    make -j ${ncpu} install
+    save_time ${name} make
+    make 
+    make install
+    save_time ${name} make install
 )
 
 
@@ -252,11 +209,10 @@ build_libjpeg()(
         -DCMAKE_INSTALL_LIBDIR=${libdir} \
     .
     cmake -L
-    save_time    ${name} make
-    make -j ${ncpu}
-    save_time // ${name} make
-    make -j ${ncpu} install
-    save_time // ${name} make install
+    save_time ${name} make
+    make
+    make install
+    save_time ${name} make install
 )
 
 build_libtiff()(
@@ -275,11 +231,10 @@ build_libtiff()(
         --without-x
     )
     ./configure "${args[@]}"
-    save_time    ${name} make
-    make -j ${ncpu}
-    save_time // ${name} make
-    make -j ${ncpu} install
-    save_time // ${name} make install
+    save_time ${name} make
+    make
+    make install
+    save_time ${name} make install
 )
 
 build_lcms()(
@@ -648,10 +603,10 @@ build_openal(){
           -DALSOFT_EXAMPLES=OFF \
     ..
     cmake -L ..
-    make -j ${ncpu}
-    save_time // ${name} make
-    make -j ${ncpu} install
-    save_time // ${name} make install
+    save_time ${name} make
+    make
+    make install
+    save_time ${name} make install
 }
 
 build_mpg123(){(
@@ -666,25 +621,31 @@ build_mpg123(){(
         --disable-static
         --with-audio=coreaudio
     )
-    mkdir m32 m64
-    (
-        cd m32
-        CFLAGS=${CFLAGS/ -arch x86_64/}
+
+    mkdir m32
+    cd m32
+        CFLAGS=${CFLAGS/ -arch x86_64} \
+        LDFLAGS=${LDFLAGS/ -arch x86_64} \
         ../configure "${args[@]}" --with-cpu=i586
-        make -j ${ncpu} -w all
-    )
-    (
-        cd m64
-        CFLAGS=${CFLAGS/ -arch i386/}
+        save_time ${name} make
+        make -w all
+    cd -
+
+    mkdir m64
+    cd m64
+        CFLAGS=${CFLAGS/ -arch i386} \
+        LDFLAGS=${LDFLAGS/ -arch i386} \
         ../configure "${args[@]}" --with-cpu=x86-64
-        make -j ${ncpu} -w all
-    )
+        save_time ${name} make
+        make -w all
+    cd -
+
     # LIBRARIES
     mkdir -p ${libdir}
     lipo -create \
-    -arch i386   m32/src/libmpg123/.libs/libmpg123.0.dylib \
-    -arch x86_64 m64/src/libmpg123/.libs/libmpg123.0.dylib \
-    -output                    ${libdir}/libmpg123.0.dylib
+        -arch i386   m32/src/libmpg123/.libs/libmpg123.0.dylib \
+        -arch x86_64 m64/src/libmpg123/.libs/libmpg123.0.dylib \
+        -output                    ${libdir}/libmpg123.0.dylib
     ln -sf libmpg123.0.dylib   ${libdir}/libmpg123.dylib
     # HEADERS
     mkdir -p                                  ${incdir}
