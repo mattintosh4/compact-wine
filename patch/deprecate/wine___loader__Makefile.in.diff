@@ -1,0 +1,17 @@
+diff --git a/loader/Makefile.in b/loader/Makefile.in
+index a5e04ddcb8..7d4c339a65 100644
+--- a/loader/Makefile.in
++++ b/loader/Makefile.in
+@@ -3,12 +3,8 @@ SOURCES = \
+ 	main.c \
+ 	preloader.c \
+ 	preloader_mac.c \
+-	wine.de.UTF-8.man.in \
+-	wine.desktop \
+-	wine.fr.UTF-8.man.in \
+ 	wine.inf.in \
+ 	wine.man.in \
+-	wine.pl.UTF-8.man.in \
+ 	wine_info.plist.in
+ 
+ PROGRAMS = $(WINELOADER_PROGRAMS)

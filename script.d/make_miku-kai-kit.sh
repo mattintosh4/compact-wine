@@ -1,12 +1,12 @@
 #!/bin/sh -eux
 
 ### 必須変数 ###
-: ${PROJECTROOT:?}
-: ${PROJECT_VERSION:?}
-: ${WINE_VERSION:?}
-: ${DISTFILE:?}
+: ${proj_root:?}
+: ${proj_version:?}
+: ${wine_version:?}
+: ${distfile:?}
 
-tempdir=`mktemp -d -t $$`/
+tempdir=`mktemp -d`/
 trap "rm -r ${tempdir}" EXIT
 
 osacompile -o ${tempdir}MikuInstaller-Kai-Kit.app <<\!
@@ -32,21 +32,21 @@ end
 resourcesdir=${tempdir}MikuInstaller-Kai-Kit.app/Contents/Resources/
 
 ### WINE ソースの展開 ###
-tar xf ${DISTFILE} -C ${resourcesdir}
+tar xf ${distfile} -C ${resourcesdir}
 
 ### 不要ファイルの削除 ###
 rm -f ${resourcesdir}wine/bin/nihonshu
 
 ### リソースの展開 ###
-install -m 0755 ${PROJECTROOT}/miku-kai-kit/update.command.in \
+install -m 0755 ${proj_root}/miku-kai-kit/update.command.in \
                 ${resourcesdir}update.command
-cp -R ${PROJECTROOT}/miku-kai-kit/patch \
+cp -R ${proj_root}/miku-kai-kit/patch \
       ${resourcesdir}
 
 ### バージョン文字列の置換 ###
 sed -i '' -e "
-  s|@PROJECT_VERSION@|${PROJECT_VERSION}|g
-  s|@WINE_VERSION@|${WINE_VERSION}|g
+  s|@PROJECT_VERSION@|${proj_version}|g
+  s|@WINE_VERSION@|${wine_version}|g
 " \
 ${resourcesdir}update.command \
 ${resourcesdir}patch/*.diff
@@ -55,9 +55,10 @@ ${resourcesdir}patch/*.diff
 hdiutil create \
   -ov \
   -format UDBZ \
+  -fs HFS+J \
   -srcdir ${tempdir}MikuInstaller-Kai-Kit.app \
   -volname MikuInstaller-Kai-Kit \
-  ${PROJECTROOT}/distfiles/MikuInstaller-Kai-Kit_${WINE_VERSION}.dmg
+  "${proj_root}"/distfiles/MikuInstaller-Kai-Kit_${wine_version}.dmg
 
 ### 終了処理 ###
 unset tempdir

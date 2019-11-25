@@ -1,0 +1,15 @@
+diff --git a/programs/explorer/explorer.c b/programs/explorer/explorer.c
+index ac5bebb..52c20a6 100644
+--- a/programs/explorer/explorer.c
++++ b/programs/explorer/explorer.c
+@@ -45,8 +45,8 @@ WINE_DEFAULT_DEBUG_CHANNEL(explorer);
+ static int nav_toolbar_height;
+ static int pathbox_height;
+ 
+-#define DEFAULT_WIDTH 640
+-#define DEFAULT_HEIGHT 480
++#define DEFAULT_WIDTH 800
++#define DEFAULT_HEIGHT 640
+ static int default_width;
+ static int default_height;
+ 
