@@ -46,17 +46,31 @@ init()
 build_wine()
 (
     name=wine
-#   ! false || \
-    {
-        rsync -a --delete "${srcdir}"/${name}/        ${builddir}/${name}/
-        cd ${builddir}/${name}
-        git checkout -b temp wine-4.20
-    }
-    ! false || \
-    {
-        rsync -a --delete "${srcdir}"/${name}-stable/ ${builddir}/${name}/
-        cd ${builddir}/${name}
-    }
+
+    source=
+    select s in stable development staging
+    do
+        case ${s} in
+        stable)
+            source=origin/stable
+        ;;
+        development)
+            source=wine-4.20
+        ;;
+        staging)
+            source=origin/master
+        ;;
+        *)
+            continue
+        ;;
+        esac
+        break
+    done; unset s
+
+    rsync -a --delete "${srcdir}"/${name}/ ${builddir}/${name}/
+    cd ${builddir}/${name}
+    git checkout -f ${source}
+    unset source
 
     patch_wine
 
@@ -70,10 +84,10 @@ build_wine()
         --with-tiff
         --with-xml
         --with-xslt
-
         --with-x
         --x-inc=/opt/X11/include
         --x-lib=/opt/X11/lib
+#       --without-x
     )
 
     CFLAGS+=" -O2"
