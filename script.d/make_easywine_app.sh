@@ -14,14 +14,22 @@ osacompile -o "${app}" "${proj_root}"/main.scpt
 
 mkdir -p                "${app}"/Contents/Resources/wine
 tar xf "${distfile}" -C "${app}"/Contents/Resources/wine
-rm "${app}"/Contents/Resources/droplet.icns
-install -m 0644 "${proj_root}"/contrib/Blackvariant-Button-Ui-System-Apps-BootCamp-2.icns \
-                "${app}"/Contents/Resources/easywine.icns
 
-mkdir -p "${app}"/Contents/Resources/wine/lib/wine/nativedlls
-cp -a    "${proj_root}"/rsrc/directx_Jun2010_redist/win32 \
-         "${proj_root}"/rsrc/directx_Jun2010_redist/win64 \
-         "${app}"/Contents/Resources/wine/lib/wine/nativedlls
+rm                      "${app}"/Contents/Resources/droplet.icns
+install -m 0644         "${proj_root}"/contrib/Blackvariant-Button-Ui-System-Apps-BootCamp-2.icns \
+                        "${app}"/Contents/Resources/easywine.icns
+
+install -m 0755         "${proj_root}"/wineloader.sh.in.easywine \
+                        "${app}"/Contents/Resources/wine/bin/nihonshu
+
+mkdir -p                "${app}"/Contents/Resources/wine/lib/wine/nativedlls
+#cp -a                   "${proj_root}"/rsrc/directx_Jun2010_redist/win32 \
+#                        "${proj_root}"/rsrc/directx_Jun2010_redist/win64 \
+#                        "${app}"/Contents/Resources/wine/lib/wine/nativedlls
+cp -a                   "${proj_root}"/rsrc/nativedlls/win32 \
+                        "${proj_root}"/rsrc/nativedlls/win64 \
+                        "${app}"/Contents/Resources/wine/lib/wine/nativedlls
+
 #tempdir=`mktemp -d`
 #(
 #  cd ${tempdir}
@@ -45,8 +53,6 @@ cp -a    "${proj_root}"/rsrc/directx_Jun2010_redist/win32 \
 #)
 #rm -rf ${tempdir}
 #unset tempdir
-install -m 0755 "${proj_root}"/wineloader.sh.in.easywine \
-                "${app}"/Contents/Resources/wine/bin/nihonshu
 
 CFBundleGetInfoString="\
 nihonshu-${proj_version}, \
@@ -93,13 +99,13 @@ add :CFBundleDocumentTypes:3:CFBundleTypeRole        string Shell
 rm -rf      "${proj_root}"/distfiles/EasyWine
 mkdir -p    "${proj_root}"/distfiles/EasyWine
 mv "${app}" "${proj_root}"/distfiles/EasyWine
-hdiutil create \
-  -ov \
-  -format UDBZ \
-  -fs HFS+J \
-  -srcdir "${proj_root}"/distfiles/EasyWine \
-  -volname ${appname}-${proj_version} \
-  "${proj_root}"/distfiles/${appname}_${proj_version}_${wine_version}.dmg
+#hdiutil create \
+#  -ov \
+#  -format UDBZ \
+#  -fs HFS+J \
+#  -srcdir "${proj_root}"/distfiles/EasyWine \
+#  -volname ${appname}-${proj_version} \
+#  "${proj_root}"/distfiles/${appname}_${proj_version}_${wine_version}.dmg
 
 (
     cd "${proj_root}"/distfiles/EasyWine
@@ -108,4 +114,4 @@ hdiutil create \
     ${appname}.app
 )
 
-unset app
+unset app appname
