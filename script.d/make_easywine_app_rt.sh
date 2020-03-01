@@ -158,13 +158,15 @@ patch -Np0 "${app}"/Contents/Resources/wine/share/wine/inf/osx-wine.inf <<!
     cp -a fonts/doc   "${app}"/Contents/Resources/wine/share/ipamonafont
 )
 
-mv "${app}" "${proj_root}"/distfiles/EasyWine
+mv "${app}"                         "${proj_root}"/distfiles/EasyWine
+cp -a "${proj_root}"/SUPPORTERS.txt "${proj_root}"/distfiles/EasyWine
 
 (
     cd "${proj_root}"/distfiles/EasyWine
     /opt/local/bin/7z a \
     "${proj_root}"/distfiles/${appname}_${proj_version}_${wine_version}.zip \
-    "${appname}".app
+    "${appname}".app \
+    SUPPORTERS.txt
 )
 
 unset app appname

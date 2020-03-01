@@ -55,7 +55,7 @@ build_wine()
             source=origin/stable
         ;;
         development)
-            source=wine-5.0-rc1
+            source=wine-5.3
         ;;
         staging)
             source=origin/master
@@ -97,11 +97,16 @@ build_wine()
     ## 64-bit
     mkdir -p m64
     cd m64
-        ../configure "${args[@]}" --enable-win64
-        save_time make ${name}
-        make
-        make install
-        save_time make ${name} install
+        (
+            cp /opt/local/lib/libMoltenVK.dylib ${libdir}
+            ln -s ../lib/libMoltenVK.dylib ${libdir}64/libMoltenVK.dylib
+            LDFLAGS+=" -F/opt/local/Library/Frameworks/MoltenVK.framework"
+            ../configure "${args[@]}" --enable-win64 --with-vulkan
+            save_time make ${name}
+            make
+            make install
+            save_time make ${name} install
+        )
     cd -
 
     ## 32-bit

@@ -51,7 +51,7 @@ set +a
 
 make(){
     n=$(/usr/sbin/sysctl -n hw.logicalcpu)
-    j=$((n > 1 ? n - 1 : n))
+    j=$((n > 2 ? n - 1 : n))
     command make -j ${j} "${@}"
     unset n j
 }
