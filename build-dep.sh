@@ -56,6 +56,7 @@ init(){
             libtool \
             nasm \
             pkgconfig \
+            ragel \
             xz \
 
         set -- $(port contents "${@}" | grep '/opt/local/bin/.*')
