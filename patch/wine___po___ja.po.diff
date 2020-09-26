@@ -1,145 +1,154 @@
 diff --git a/po/ja.po b/po/ja.po
-index 1ba61a00a6..df920ec372 100644
+index ecf380eb8ff..752a12fae11 100644
 --- a/po/ja.po
 +++ b/po/ja.po
-@@ -8713,32 +8713,32 @@ msgstr "プログラム"
+@@ -9477,32 +9477,32 @@ msgstr "プログラム"
  
- #: shell32.rc:204
+ #: dlls/shell32/shell32.rc:204
  msgid "My Documents"
 -msgstr "My Documents"
 +msgstr "マイ ドキュメント"
  
- #: shell32.rc:205
+ #: dlls/shell32/shell32.rc:205
  msgid "Favorites"
 -msgstr "Favorites"
 +msgstr "お気に入り"
  
- #: shell32.rc:206
+ #: dlls/shell32/shell32.rc:206
  msgid "StartUp"
 -msgstr "StartUp"
 +msgstr "スタートアップ"
  
- #: shell32.rc:207
+ #: dlls/shell32/shell32.rc:207
  msgid "Start Menu"
 -msgstr "Start Menu"
 +msgstr "スタート メニュー"
  
- #: shell32.rc:208
+ #: dlls/shell32/shell32.rc:208
  msgid "My Music"
 -msgstr "My Music"
 +msgstr "マイ ミュージック"
  
- #: shell32.rc:209
+ #: dlls/shell32/shell32.rc:209
  msgid "My Videos"
 -msgstr "My Videos"
 +msgstr "マイ ビデオ"
  
- #: shell32.rc:210
+ #: dlls/shell32/shell32.rc:210
  msgctxt "directory"
  msgid "Desktop"
 -msgstr "Desktop"
 +msgstr "デスクトップ"
  
- #: shell32.rc:211
+ #: dlls/shell32/shell32.rc:211
  msgid "NetHood"
-@@ -8746,7 +8746,7 @@ msgstr "NetHood"
+@@ -9510,7 +9510,7 @@ msgstr "NetHood"
  
- #: shell32.rc:212
+ #: dlls/shell32/shell32.rc:212
  msgid "Templates"
 -msgstr "Templates"
 +msgstr "テンプレート"
  
- #: shell32.rc:213
+ #: dlls/shell32/shell32.rc:213
  msgid "PrintHood"
-@@ -8762,7 +8762,7 @@ msgstr "Program Files"
+@@ -9526,7 +9526,7 @@ msgstr "Program Files"
  
- #: shell32.rc:217
+ #: dlls/shell32/shell32.rc:217
  msgid "My Pictures"
 -msgstr "My Pictures"
 +msgstr "マイ ピクチャ"
  
- #: shell32.rc:218
+ #: dlls/shell32/shell32.rc:218
  msgid "Common Files"
-@@ -8770,23 +8770,23 @@ msgstr "Common Files"
- 
- #: shell32.rc:219 shell32.rc:150 shell32.rc:235
+@@ -9535,23 +9535,23 @@ msgstr "Common Files"
+ #: dlls/shell32/shell32.rc:219 dlls/shell32/shell32.rc:150
+ #: dlls/shell32/shell32.rc:235
  msgid "Documents"
 -msgstr "Documents"
 +msgstr "ドキュメント"
  
- #: shell32.rc:220
+ #: dlls/shell32/shell32.rc:220
  msgid "Administrative Tools"
 -msgstr "Administrative Tools"
 +msgstr "管理ツール"
  
- #: shell32.rc:221
+ #: dlls/shell32/shell32.rc:221
  msgid "Music"
 -msgstr "Music"
 +msgstr "ミュージック"
  
- #: shell32.rc:222
+ #: dlls/shell32/shell32.rc:222
  msgid "Pictures"
 -msgstr "Pictures"
 +msgstr "ピクチャ"
  
- #: shell32.rc:223
+ #: dlls/shell32/shell32.rc:223
  msgid "Videos"
 -msgstr "Videos"
 +msgstr "ビデオ"
  
- #: shell32.rc:216
+ #: dlls/shell32/shell32.rc:216
  msgid "Program Files (x86)"
-@@ -8818,11 +8818,11 @@ msgstr "機種名"
+@@ -9559,7 +9559,7 @@ msgstr "Program Files (x86)"
  
- #: shell32.rc:228
+ #: dlls/shell32/shell32.rc:224
+ msgid "Contacts"
+-msgstr "Contacs"
++msgstr "Contacts"
+ 
+ #: dlls/shell32/shell32.rc:225 programs/winefile/winefile.rc:112
+ msgid "Links"
+@@ -9583,11 +9583,11 @@ msgstr "機種名"
+ 
+ #: dlls/shell32/shell32.rc:228
  msgid "Sample Music"
 -msgstr "Sample Music"
 +msgstr "サンプル ミュージック"
  
- #: shell32.rc:229
+ #: dlls/shell32/shell32.rc:229
  msgid "Sample Pictures"
 -msgstr "Sample Pictures"
 +msgstr "サンプル ピクチャ"
  
- #: shell32.rc:230
+ #: dlls/shell32/shell32.rc:230
  msgid "Sample Playlists"
-@@ -8830,23 +8830,23 @@ msgstr "Sample Playlists"
+@@ -9595,23 +9595,23 @@ msgstr "Sample Playlists"
  
- #: shell32.rc:231
+ #: dlls/shell32/shell32.rc:231
  msgid "Sample Videos"
 -msgstr "Sample Videos"
 +msgstr "サンプル ビデオ"
  
- #: shell32.rc:232
+ #: dlls/shell32/shell32.rc:232
  msgid "Saved Games"
 -msgstr "Saved Games"
 +msgstr "保存したゲーム"
  
- #: shell32.rc:233
+ #: dlls/shell32/shell32.rc:233
  msgid "Searches"
 -msgstr "Searches"
 +msgstr "検索"
  
- #: shell32.rc:234
+ #: dlls/shell32/shell32.rc:234
  msgid "Users"
 -msgstr "Users"
 +msgstr "ユーザー"
  
- #: shell32.rc:236
+ #: dlls/shell32/shell32.rc:236
  msgid "Downloads"
 -msgstr "Downloads"
 +msgstr "ダウンロード"
  
- #: shell32.rc:169
+ #: dlls/shell32/shell32.rc:169
  msgid "Unable to create new Folder: Permission denied."
-@@ -14782,7 +14782,9 @@ msgstr ""
+@@ -15837,7 +15837,9 @@ msgstr ""
  
- #: wineboot.rc:46
+ #: programs/wineboot/wineboot.rc:46
  msgid "The Wine configuration in %s is being updated, please wait..."
 -msgstr "%s にある Wine 設定を更新しています。しばらくお待ちください..."
 +msgstr "Nihonshu/EasyWine をご利用いただきありがとうございます...(*´ω｀*)\n"
 +"\n"
 +"%s にある Wine 設定を更新しています。しばらくお待ちください..."
  
- #: winecfg.rc:141
+ #: programs/winecfg/winecfg.rc:140
  msgid ""

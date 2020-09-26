@@ -96,7 +96,7 @@ add :CFBundleDocumentTypes:3:CFBundleTypeMIMETypes:  string application/x-msi
 add :CFBundleDocumentTypes:3:CFBundleTypeRole        string Shell
 !
 
-rm -rf                              "${proj_root}"/distfiles/EasyWine
+rm -rf                              "${proj_root}"/distfiles/EasyWine || :
 mkdir -p                            "${proj_root}"/distfiles/EasyWine
 mv "${app}"                         "${proj_root}"/distfiles/EasyWine
 cp -a "${proj_root}"/SUPPORTERS.txt "${proj_root}"/distfiles/EasyWine
