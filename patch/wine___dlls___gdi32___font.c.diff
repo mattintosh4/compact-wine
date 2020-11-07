@@ -1,0 +1,27 @@
+diff --git a/dlls/gdi32/font.c b/dlls/gdi32/font.c
+index 6ad03df176b..6c89a774d07 100644
+--- a/dlls/gdi32/font.c
++++ b/dlls/gdi32/font.c
+@@ -357,7 +357,7 @@ static const struct nls_update_font_list
+     /* Japanese */
+     { 932, 932, "vga932.fon", "jvgafix.fon", "jvgasys.fon",
+       "coure.fon", "serife.fon", "jsmalle.fon", "sserife.fon", "sseriff.fon",
+-      "MS UI Gothic","MS Serif"
++      "VL Gothic", "Times New Roman"
+     },
+     /* Chinese Simplified */
+     { 936, 936, "vga936.fon", "svgafix.fon", "svgasys.fon",
+@@ -2324,7 +2324,12 @@ static void update_font_system_link_info(UINT current_ansi_codepage)
+         L"MSGOTHIC.TTC,MS UI Gothic\0"
+         L"MINGLIU.TTC,PMingLiU\0"
+         L"SIMSUN.TTC,SimSun\0"
+-        L"GULIM.TTC,Gulim\0";
++        L"GULIM.TTC,Gulim\0"
++        L"YUGOTHM.TTC,Yu Gothic UI\0"
++        L"MSJH.TTC,Microsoft JhengHei UI\0"
++        L"MSYH.TTC,Microsoft YaHei UI\0"
++        L"MALGUN.TTF,Malgun Gothic\0"
++        L"SEGUISYM.TTF,Segoe UI Symbol\0";
+     static const WCHAR system_link_korean[] =
+         L"GULIM.TTC,Gulim\0"
+         L"MSGOTHIC.TTC,MS UI Gothic\0"

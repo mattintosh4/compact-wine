@@ -1,47 +1,8 @@
 diff --git a/dlls/gdi32/freetype.c b/dlls/gdi32/freetype.c
-index c38108eece..005aa560e6 100644
+index af4e9248f00..ab7abb31026 100644
 --- a/dlls/gdi32/freetype.c
 +++ b/dlls/gdi32/freetype.c
-@@ -512,6 +512,8 @@ static const WCHAR external_fonts_reg_key[] = {'S','o','f','t','w','a','r','e','
- static const WCHAR Lucida_Sans_Unicode[] = {'L','u','c','i','d','a',' ','S','a','n','s',' ','U','n','i','c','o','d','e',0};
- static const WCHAR Microsoft_Sans_Serif[] = {'M','i','c','r','o','s','o','f','t',' ','S','a','n','s',' ','S','e','r','i','f',0 };
- static const WCHAR Tahoma[] = {'T','a','h','o','m','a',0};
-+static const WCHAR MS_Gothic[]    = {'M','S',' ','G','o','t','h','i','c',0};
-+static const WCHAR MS_PGothic[]   = {'M','S',' ','P','G','o','t','h','i','c',0};
- static const WCHAR MS_UI_Gothic[] = {'M','S',' ','U','I',' ','G','o','t','h','i','c',0};
- static const WCHAR SimSun[] = {'S','i','m','S','u','n',0};
- static const WCHAR Gulim[] = {'G','u','l','i','m',0};
-@@ -3800,7 +3802,7 @@ static const struct nls_update_font_list
-     /* Japanese */
-     { 932, 932, "vga932.fon", "jvgafix.fon", "jvgasys.fon",
-       "coure.fon", "serife.fon", "jsmalle.fon", "sserife.fon", "sseriff.fon",
--      "MS UI Gothic","MS Serif",
-+      "VL PGothic", "MS Serif",
-       NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-       { 0 }, { 0 }, { 0 }
-     },
-@@ -3943,7 +3945,9 @@ static void update_font_system_link_info(UINT current_ansi_codepage)
-          'B','A','T','A','N','G','.','T','T','C',',','B','a','t','a','n','g','\0',
-          '\0'};
-     static const WCHAR system_link_japanese[] =
--        {'M','S','G','O','T','H','I','C','.','T','T','C',',','M','S',' ','U','I',' ','G','o','t','h','i','c','\0',
-+        {'V','L','-','P','G','o','t','h','i','c','-','R','e','g','u','l','a','r','.','t','t','f',',',
-+         'V','L',' ','P','G','o','t','h','i','c','\0',
-+         'M','S','G','O','T','H','I','C','.','T','T','C',',','M','S',' ','U','I',' ','G','o','t','h','i','c','\0',
-          'M','I','N','G','L','I','U','.','T','T','C',',','P','M','i','n','g','L','i','U','\0',
-          'S','I','M','S','U','N','.','T','T','C',',','S','i','m','S','u','n','\0',
-          'G','U','L','I','M','.','T','T','C',',','G','u','l','i','m','\0',
-@@ -3992,6 +3996,9 @@ static void update_font_system_link_info(UINT current_ansi_codepage)
-         set_multi_value_key(hkey, Lucida_Sans_Unicode, link, len);
-         set_multi_value_key(hkey, Microsoft_Sans_Serif, link, len);
-         set_multi_value_key(hkey, Tahoma, link, len);
-+        set_multi_value_key(hkey, MS_Gothic, link, len);
-+        set_multi_value_key(hkey, MS_PGothic, link, len);
-+        set_multi_value_key(hkey, MS_UI_Gothic, link, len);
-         RegCloseKey(hkey);
-     }
- }
-@@ -6907,13 +6914,13 @@ static FT_Int get_load_flags( UINT format )
+@@ -7033,13 +7033,13 @@ static FT_Int get_load_flags( UINT format )
      switch (format & ~GGO_GLYPH_INDEX)
      {
      case GGO_BITMAP:
