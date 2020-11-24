@@ -55,7 +55,7 @@ build_wine()
             source=origin/stable
         ;;
         development)
-            source=wine-5.21
+            source=wine-5.22
         ;;
         staging)
             source=origin/master
